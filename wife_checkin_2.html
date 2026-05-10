@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Daily Check-In</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf6f0;
+    --ink: #1a1815;
+    --cream: #f0e9dc;
+    --border: #ddd5c5;
+    --green: #2d6647;
+    --green-bg: rgba(45,102,71,0.08);
+    --gold: #c4892a;
+    --gold-bg: rgba(196,137,42,0.08);
+    --muted: #8a8278;
+    --white: #fff;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--ink); font-family:'DM Sans',sans-serif; font-size:15px; line-height:1.6; padding-bottom:40px; }
+
+  /* HEADER */
+  .header {
+    background:var(--green); color:var(--white);
+    padding:36px 28px;
+    text-align:center;
+  }
+  .header-tag {
+    font-family:'DM Mono',monospace; font-size:10px;
+    letter-spacing:3px; text-transform:uppercase;
+    opacity:0.7; margin-bottom:10px;
+  }
+  .header-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:48px; line-height:.9; letter-spacing:2px;
+  }
+  .header-date {
+    margin-top:14px; font-family:'DM Mono',monospace;
+    font-size:12px; letter-spacing:1px; opacity:0.8;
+  }
+
+  /* WRAP */
+  .wrap { max-width:600px; margin:0 auto; padding:24px; }
+
+  /* SECTION */
+  .section { margin-bottom:24px; }
+  .section-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:22px; letter-spacing:1px;
+    margin-bottom:12px; color:var(--green);
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title::before {
+    content:''; display:block;
+    width:24px; height:3px; background:var(--green);
+  }
+
+  /* CHECKLIST CARD */
+  .checklist {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:8px; overflow:hidden;
+  }
+  .check-item {
+    display:flex; align-items:center; gap:14px;
+    padding:14px 16px;
+    border-bottom:1px solid var(--cream);
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+  .check-item:last-child { border-bottom:none; }
+  .check-item:hover { background:var(--cream); }
+  .check-item.checked { background:var(--green-bg); }
+  .check-item.checked .item-text { text-decoration:line-through; color:var(--muted); }
+
+  .check-circle {
+    width:26px; height:26px;
+    border:2px solid var(--border);
+    border-radius:50%;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.2s;
+    font-size:14px;
+  }
+  .check-item.checked .check-circle {
+    background:var(--green);
+    border-color:var(--green);
+    color:white;
+  }
+  .item-content { flex:1; }
+  .item-text {
+    font-size:15px; font-weight:500;
+    line-height:1.4;
+  }
+  .item-note {
+    font-size:12px; color:var(--muted);
+    margin-top:2px;
+  }
+
+  /* WEIGHT INPUT */
+  .weight-card {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:8px; padding:20px;
+    text-align:center;
+  }
+  .weight-label {
+    font-family:'DM Mono',monospace; font-size:10px;
+    letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:10px;
+  }
+  .weight-input-wrap {
+    display:flex; align-items:center; justify-content:center;
+    gap:10px;
+  }
+  .weight-input {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:56px; color:var(--green);
+    background:transparent; border:none;
+    text-align:center; width:160px;
+    border-bottom:2px solid var(--border);
+    outline:none;
+  }
+  .weight-input:focus { border-color:var(--green); }
+  .weight-unit {
+    font-family:'DM Mono',monospace; font-size:14px;
+    color:var(--muted); letter-spacing:1px;
+  }
+  .weight-progress {
+    margin-top:14px;
+    font-size:13px; color:var(--muted);
+  }
+  .weight-progress span { color:var(--green); font-weight:600; }
+
+  /* FOOD GUIDE */
+  .food-toggle {
+    background:var(--gold-bg); border:1px solid rgba(196,137,42,0.2);
+    border-radius:8px; padding:16px;
+    margin-bottom:14px; cursor:pointer;
+  }
+  .food-toggle-header {
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .food-toggle-title {
+    font-family:'Bebas Neue',sans-serif;
+    font-size:18px; letter-spacing:1px;
+    color:var(--gold);
+  }
+  .food-toggle-icon {
+    color:var(--gold);
+    transition:transform 0.2s;
+  }
+  .food-toggle.open .food-toggle-icon { transform:rotate(180deg); }
+  .food-toggle-content {
+    max-height:0; overflow:hidden;
+    transition:max-height 0.3s ease;
+  }
+  .food-toggle.open .food-toggle-content { max-height:1000px; padding-top:14px; }
+  .food-list { list-style:none; }
+  .food-list li {
+    padding:6px 0;
+    font-size:13px; color:var(--ink);
+    border-bottom:1px solid rgba(196,137,42,0.15);
+  }
+  .food-list li:last-child { border-bottom:none; }
+  .food-list li strong { color:var(--gold); }
+
+  /* AVOID LIST */
+  .avoid-card {
+    background:#fff5f0; border:1px solid #f5cfb6;
+    border-radius:8px; padding:16px;
+  }
+  .avoid-title {
+    font-family:'Bebas Neue',sans-serif; font-size:18px;
+    color:#b54a1e; letter-spacing:1px; margin-bottom:10px;
+  }
+  .avoid-list {
+    display:flex; flex-wrap:wrap; gap:8px;
+  }
+  .avoid-tag {
+    background:#fce5d6; color:#b54a1e;
+    font-size:12px; padding:5px 10px;
+    border-radius:4px;
+    text-decoration:line-through;
+    font-weight:500;
+  }
+
+  /* NOTES */
+  .notes-card {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:8px; padding:16px;
+  }
+  .notes-textarea {
+    width:100%; min-height:80px;
+    background:var(--cream); border:1px solid var(--border);
+    border-radius:6px; padding:12px;
+    font-family:'DM Sans',sans-serif; font-size:14px;
+    color:var(--ink); resize:vertical;
+    outline:none;
+  }
+  .notes-textarea:focus { border-color:var(--green); }
+
+  /* SAVE BUTTON */
+  .save-btn {
+    width:100%; padding:16px;
+    background:var(--green); color:white;
+    border:none; border-radius:8px;
+    font-family:'Bebas Neue',sans-serif;
+    font-size:20px; letter-spacing:2px;
+    cursor:pointer; margin-top:20px;
+    transition:opacity 0.15s;
+  }
+  .save-btn:hover { opacity:0.9; }
+  .save-btn.saved { background:var(--gold); }
+
+  /* PROGRESS RING */
+  .progress-strip {
+    background:var(--white); border:1px solid var(--border);
+    border-radius:8px; padding:16px 20px;
+    margin-bottom:20px;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .progress-info { flex:1; }
+  .progress-label {
+    font-family:'DM Mono',monospace; font-size:9px;
+    letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:2px;
+  }
+  .progress-value {
+    font-family:'Bebas Neue',sans-serif; font-size:24px;
+    color:var(--green);
+  }
+  .progress-bar {
+    width:120px; height:8px;
+    background:var(--cream); border-radius:4px;
+    overflow:hidden; margin-left:16px;
+  }
+  .progress-fill {
+    height:100%; background:var(--green);
+    transition:width 0.5s ease;
+    width:0%;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">My Daily Check-In · Day <span id="dayCount">1</span></div>
+  <div class="header-title">TODAY<br>I SHOWED UP</div>
+  <div class="header-date" id="todayDate"></div>
+</div>
+
+<div class="wrap">
+
+  <!-- PROGRESS -->
+  <div class="progress-strip">
+    <div class="progress-info">
+      <div class="progress-label">Today's Progress</div>
+      <div class="progress-value"><span id="completedCount">0</span> / 8 done</div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- WEIGHT -->
+  <div class="section">
+    <div class="section-title">Today's Weight</div>
+    <div class="weight-card">
+      <div class="weight-label">Weigh in morning · after bathroom · before eating</div>
+      <div class="weight-input-wrap">
+        <input type="number" class="weight-input" id="weightInput" placeholder="189" step="0.1">
+        <span class="weight-unit">lbs</span>
+      </div>
+      <div class="weight-progress">Goal: <span>140 lbs</span> · Started at <span>189 lbs</span></div>
+    </div>
+  </div>
+
+  <!-- DAILY CHECKLIST -->
+  <div class="section">
+    <div class="section-title">My Daily 8</div>
+    <div class="checklist">
+
+      <div class="check-item" onclick="toggleCheck(this, 'walk')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">🚶‍♀️ Morning fasted walk</div>
+          <div class="item-note">20–30 min · water + green tea only · before any food</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'water')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">💧 Drink 2.5L water</div>
+          <div class="item-note">10 glasses throughout the day</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'tea')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">🍵 Green tea — 2 cups</div>
+          <div class="item-note">Morning + afternoon · no sugar · burns belly fat</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'protein')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">🥩 Hit 150g protein</div>
+          <div class="item-note">Fish · turkey · Greek yoghurt · cottage cheese · protein shake</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'meals')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">🍽️ 3 clean meals — under 1,900 kcal</div>
+          <div class="item-note">No processed food · whole wheat only · no sugary drinks</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'gym')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">💪 Gym session — weights first, then stairmaster</div>
+          <div class="item-note">45 min weights · 15 min stairmaster after</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'sugar')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">🚫 No sugar · no juice · no alcohol</div>
+          <div class="item-note">Sugary drinks go straight to belly fat</div>
+        </div>
+      </div>
+
+      <div class="check-item" onclick="toggleCheck(this, 'sleep')">
+        <div class="check-circle">✓</div>
+        <div class="item-content">
+          <div class="item-text">😴 Sleep 7–8 hours</div>
+          <div class="item-note">Poor sleep = more cortisol = more belly fat</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WHAT I CAN EAT -->
+  <div class="section">
+    <div class="section-title">What I Can Eat Today</div>
+
+    <div class="food-toggle" onclick="toggleFood(this)">
+      <div class="food-toggle-header">
+        <div class="food-toggle-title">🐟 Proteins (pick 3 today)</div>
+        <span class="food-toggle-icon">▼</span>
+      </div>
+      <div class="food-toggle-content">
+        <ul class="food-list">
+          <li><strong>Fish:</strong> Salmon · tuna · cod · tilapia · sardines</li>
+          <li><strong>Turkey:</strong> ground turkey · turkey breast slices</li>
+          <li><strong>Beef:</strong> lean ground beef 95% · steak (lean cut)</li>
+          <li><strong>Greek yoghurt:</strong> plain · 0% or 2% fat · 200g serving</li>
+          <li><strong>Cottage cheese:</strong> low fat · 200g serving</li>
+          <li><strong>Protein powder:</strong> whey or plant based · 1 scoop</li>
+          <li><strong>Tofu / tempeh:</strong> if you like them</li>
+          <li><strong>Shrimp / prawns:</strong> grilled or sautéed</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="food-toggle" onclick="toggleFood(this)">
+      <div class="food-toggle-header">
+        <div class="food-toggle-title">🌾 Carbs (small portions only)</div>
+        <span class="food-toggle-icon">▼</span>
+      </div>
+      <div class="food-toggle-content">
+        <ul class="food-list">
+          <li><strong>Sweet potato</strong> · best choice for fat loss</li>
+          <li><strong>Brown rice</strong> · 100g cooked max</li>
+          <li><strong>Quinoa</strong> · 100g cooked</li>
+          <li><strong>Whole wheat bread</strong> · 1 slice max</li>
+          <li><strong>Whole wheat pasta</strong> · 100g cooked max</li>
+          <li><strong>Oats</strong> · 50g dry · breakfast only</li>
+          <li><strong>Banana</strong> · 1 per day · before workout</li>
+          <li><strong>Apple</strong> · best snack option</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="food-toggle" onclick="toggleFood(this)">
+      <div class="food-toggle-header">
+        <div class="food-toggle-title">🥦 Vegetables (eat unlimited)</div>
+        <span class="food-toggle-icon">▼</span>
+      </div>
+      <div class="food-toggle-content">
+        <ul class="food-list">
+          <li><strong>Broccoli</strong> · best for visceral fat reduction</li>
+          <li><strong>Spinach + mixed greens</strong> · fill half the plate</li>
+          <li><strong>Bell peppers</strong> · all colors</li>
+          <li><strong>Cucumber</strong> · great snack</li>
+          <li><strong>Tomatoes</strong> · cherry or large</li>
+          <li><strong>Cauliflower</strong> · roasted or steamed</li>
+          <li><strong>Zucchini</strong> · grilled or sautéed</li>
+          <li><strong>Asparagus · green beans · brussels sprouts</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="food-toggle" onclick="toggleFood(this)">
+      <div class="food-toggle-header">
+        <div class="food-toggle-title">🥑 Healthy Fats (small amounts)</div>
+        <span class="food-toggle-icon">▼</span>
+      </div>
+      <div class="food-toggle-content">
+        <ul class="food-list">
+          <li><strong>Avocado</strong> · 1/2 per day · directly targets belly fat</li>
+          <li><strong>Olive oil</strong> · 1 tbsp for cooking or dressing</li>
+          <li><strong>Almonds</strong> · 15g (small handful) max per day</li>
+          <li><strong>Walnuts</strong> · 15g max per day</li>
+          <li><strong>Chia seeds</strong> · 1 tbsp on yoghurt</li>
+          <li><strong>Flax seeds</strong> · 1 tbsp · great fiber</li>
+          <li><strong>Tahini</strong> · 1 tbsp on salad</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHAT TO AVOID -->
+  <div class="section">
+    <div class="section-title">Avoid These Today</div>
+    <div class="avoid-card">
+      <div class="avoid-title">⛔ Off the menu</div>
+      <div class="avoid-list">
+        <span class="avoid-tag">Eggs</span>
+        <span class="avoid-tag">Chicken</span>
+        <span class="avoid-tag">Milk</span>
+        <span class="avoid-tag">Beans</span>
+        <span class="avoid-tag">White bread</span>
+        <span class="avoid-tag">White pasta</span>
+        <span class="avoid-tag">Pastries</span>
+        <span class="avoid-tag">Sugar</span>
+        <span class="avoid-tag">Juice</span>
+        <span class="avoid-tag">Soda</span>
+        <span class="avoid-tag">Alcohol</span>
+        <span class="avoid-tag">Fried food</span>
+        <span class="avoid-tag">Vegetable oil</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="section">
+    <div class="section-title">How I Felt Today</div>
+    <div class="notes-card">
+      <textarea class="notes-textarea" id="notes" placeholder="Energy level · mood · any wins · what was hard · what tomorrow needs..."></textarea>
+    </div>
+  </div>
+
+  <!-- SAVE -->
+  <button class="save-btn" id="saveBtn" onclick="saveDay()">SAVE TODAY ✓</button>
+
+</div>
+
+<script>
+  // Set today's date
+  const today = new Date();
+  const opts = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
+  document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', opts);
+
+  // Day count
+  const startDate = new Date('2026-04-06'); // adjust to actual start
+  const dayCount = Math.max(1, Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1);
+  document.getElementById('dayCount').textContent = Math.min(dayCount, 90);
+
+  // Load from storage
+  const dateKey = today.toISOString().split('T')[0];
+  const saved = localStorage.getItem('checkin_' + dateKey);
+  let state = saved ? JSON.parse(saved) : { checks: {}, weight: '', notes: '' };
+
+  // Apply saved state
+  document.querySelectorAll('.check-item').forEach(item => {
+    const id = item.getAttribute('onclick').match(/'(\w+)'/)[1];
+    if (state.checks[id]) {
+      item.classList.add('checked');
+    }
+  });
+  if (state.weight) document.getElementById('weightInput').value = state.weight;
+  if (state.notes) document.getElementById('notes').value = state.notes;
+  updateProgress();
+
+  function toggleCheck(el, id) {
+    el.classList.toggle('checked');
+    state.checks[id] = el.classList.contains('checked');
+    updateProgress();
+  }
+
+  function toggleFood(el) {
+    el.classList.toggle('open');
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.check-item').length;
+    const done = document.querySelectorAll('.check-item.checked').length;
+    document.getElementById('completedCount').textContent = done;
+    document.getElementById('progressFill').style.width = (done/total*100) + '%';
+  }
+
+  function saveDay() {
+    state.weight = document.getElementById('weightInput').value;
+    state.notes = document.getElementById('notes').value;
+    localStorage.setItem('checkin_' + dateKey, JSON.stringify(state));
+    const btn = document.getElementById('saveBtn');
+    btn.textContent = 'SAVED ✓';
+    btn.classList.add('saved');
+    setTimeout(() => {
+      btn.textContent = 'SAVE TODAY ✓';
+      btn.classList.remove('saved');
+    }, 2000);
+  }
+
+  // Auto-save on weight + notes change
+  document.getElementById('weightInput').addEventListener('change', () => {
+    state.weight = document.getElementById('weightInput').value;
+    localStorage.setItem('checkin_' + dateKey, JSON.stringify(state));
+  });
+  document.getElementById('notes').addEventListener('blur', () => {
+    state.notes = document.getElementById('notes').value;
+    localStorage.setItem('checkin_' + dateKey, JSON.stringify(state));
+  });
+</script>
+
+</body>
+</html>
