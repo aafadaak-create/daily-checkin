@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kaya Check-In · Bold Daily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+*{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:inherit;touch-action:manipulation}
+ul{list-style:none}
+.icon{width:20px;height:20px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+:focus-visible{outline:3px solid var(--ring);outline-offset:3px}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--surface);color:var(--ink);padding:8px 12px;z-index:10}
+.skip:focus{left:8px}
+.wrap{max-width:620px;margin:0 auto;padding:24px 16px 48px}
+.section{margin-top:32px}
+.label{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.progress{display:flex;align-items:center;gap:16px}
+.progress-info{flex:1}
+.ring{width:56px;height:56px;transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:5}
+.ring-track{stroke:var(--track)}
+.ring-fill{stroke:var(--primary);stroke-linecap:round;stroke-dasharray:0 100;transition:stroke-dasharray .5s ease}
+.bar{width:120px;height:6px;background:var(--track);overflow:hidden}
+.bar-fill{height:100%;width:0;background:var(--primary);transition:width .5s ease}
+.weight-card{text-align:center}
+.weight-row{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-top:10px}
+.weight-input{width:170px;background:transparent;border:0;border-bottom:2px solid var(--line);text-align:center;color:var(--primary);outline-offset:6px}
+.weight-input:focus{border-color:var(--primary)}
+.weight-input::-webkit-inner-spin-button,.weight-input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.weight-input{-moz-appearance:textfield;appearance:textfield}
+.weight-unit{color:var(--muted)}
+.weight-goal{margin-top:12px;font-size:14px;color:var(--muted)}
+.weight-goal strong{color:var(--primary);font-weight:600}
+.check{display:flex;align-items:center;gap:14px;width:100%;min-height:56px;padding:14px 16px;transition:background .15s}
+.tick{width:26px;height:26px;display:grid;place-items:center;border:2px solid var(--line);flex-shrink:0;transition:background .2s,border-color .2s}
+.tick .icon{width:16px;height:16px;stroke-width:3;opacity:0;transition:opacity .15s}
+.check[aria-pressed=true] .tick{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.check[aria-pressed=true] .tick .icon{opacity:1}
+.check[aria-pressed=true] .check-text{text-decoration:line-through;color:var(--muted)}
+.habit-icon{color:var(--accent-ink)}
+.check-body{display:flex;flex-direction:column;flex:1}
+.check-text{font-weight:500;line-height:1.35}
+.check-note{font-size:13px;color:var(--muted);margin-top:2px}
+.foods{display:grid;gap:10px}
+.food-head{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:14px 16px}
+.food-title{font-weight:600}
+.food-sub{flex:1;font-size:13px;color:var(--muted)}
+.chev{transition:transform .2s}
+.food-head[aria-expanded=true] .chev{transform:rotate(180deg)}
+.food-list{padding:0 16px 12px}
+.food-list li{padding:8px 0;font-size:14px;border-top:1px solid var(--line-soft)}
+.food-list b{color:var(--accent-ink);font-weight:600;margin-right:4px}
+.avoid-title{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--danger);margin-bottom:12px}
+.avoid-list{display:flex;flex-wrap:wrap;gap:8px}
+.avoid-list li{font-size:13px;padding:5px 11px;background:var(--danger-bg);color:var(--danger);text-decoration:line-through}
+.notes{width:100%;min-height:96px;padding:12px;font:inherit;font-size:15px;color:var(--ink);background:var(--bg);border:1px solid var(--line);resize:vertical}
+.notes:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px var(--ring-soft)}
+.save-btn{display:block;width:100%;margin-top:28px;min-height:56px;background:var(--primary);color:var(--on-primary);text-align:center;transition:background .2s,transform .1s}
+.save-btn:active{transform:scale(.99)}
+.save-btn.saved{background:var(--accent-ink)}
+.save-status{min-height:1.5em;margin-top:8px;text-align:center;font-size:14px;color:var(--muted)}
+.foot{margin-top:32px;text-align:center;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+:root{
+  /* PLACEHOLDER palette — swap for Kaya logo colours */
+  --bg:#F4F2EE;--surface:#FFFFFF;--ink:#1C1B19;--muted:#5F5B55;
+  --primary:#0F5A56;--on-primary:#FFFFFF;--accent-ink:#0F5A56;--gold:#E4A72B;
+  --line:#D8D4CC;--line-soft:#EBE8E2;--track:#E3DFD7;--ring:#0F5A56;--ring-soft:rgba(15,90,86,.18);
+  --danger:#A3321F;--danger-bg:#F7E3DD;
+  --font-body:'Archivo',sans-serif;--font-display:'Archivo',sans-serif;
+}
+.hero{background:var(--ink);color:#fff;padding:24px 20px 32px}
+.brand{display:flex;align-items:center;justify-content:space-between;max-width:620px;margin:0 auto 36px}
+.logo{font-weight:800;font-size:20px;letter-spacing:.2em;color:var(--gold)}
+.brand-sub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#BDB8AF}
+.eyebrow,.title,.date{max-width:620px;margin-left:auto;margin-right:auto}
+.eyebrow{font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.title{font-weight:800;font-size:clamp(44px,13vw,64px);line-height:.92;letter-spacing:-.02em;text-transform:uppercase;margin-top:14px}
+.date{margin-top:14px;font-size:14px;color:#BDB8AF}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.progress{padding:16px 18px;margin-top:-44px;position:relative;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.bar{display:none}
+.progress-value{font-weight:800;font-size:32px;line-height:1;color:var(--ink)}
+.of{font-size:16px;font-weight:500;color:var(--muted)}
+.section-title{font-weight:800;font-size:15px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';width:10px;height:10px;background:var(--gold)}
+.weight-card{padding:22px}
+.weight-input{font-weight:800;font-size:64px;letter-spacing:-.02em;color:var(--ink)}
+.weight-goal strong{color:var(--primary)}
+.checklist{display:grid;grid-template-columns:1fr;gap:8px;background:none;border:0}
+@media (min-width:560px){.checklist{grid-template-columns:1fr 1fr}}
+.checklist li{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.check{height:100%;align-items:flex-start;border-radius:12px}
+.check:hover{background:#FAF9F6}
+.tick{border-radius:8px}
+.check[aria-pressed=true]{background:#E8F0EF}
+.check[aria-pressed=true]{outline:2px solid var(--primary);outline-offset:-2px}
+.food-title{font-weight:700}
+.avoid-card{padding:16px}
+.avoid-list li{border-radius:6px;font-weight:500}
+.notes-card{padding:12px}
+.notes{border-radius:8px}
+.save-btn{border-radius:12px;background:var(--ink);font-weight:800;font-size:16px;letter-spacing:.14em;text-transform:uppercase}
+.save-btn.saved{background:var(--primary)}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to check-in</a>
+
+<header class="hero">
+  <div class="brand">
+    <!-- LOGO SLOT: replace this wordmark with <img src="kaya-logo.svg" alt="Kaya"> -->
+    <span class="logo" role="img" aria-label="Kaya">KAYA</span>
+    <span class="brand-sub">Daily Check-In</span>
+  </div>
+  <p class="eyebrow">Day <span id="dayCount">1</span> of 90</p>
+  <h1 class="title">Today I<br>showed up</h1>
+  <p class="date" id="todayDate"></p>
+</header>
+
+<main id="main" class="wrap">
+
+  <section class="progress card" aria-label="Today's progress">
+    <svg class="ring" viewBox="0 0 44 44" aria-hidden="true">
+      <circle class="ring-track" cx="22" cy="22" r="18"/>
+      <circle class="ring-fill" id="ringFill" cx="22" cy="22" r="18" pathLength="100"/>
+    </svg>
+    <div class="progress-info">
+      <p class="label">Today's progress</p>
+      <p class="progress-value"><span id="completedCount">0</span><span class="of"> / 8 done</span></p>
+    </div>
+    <div class="bar" aria-hidden="true"><div class="bar-fill" id="barFill"></div></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Today's weight</h2>
+    <div class="card weight-card">
+      <label class="label" for="weightInput">Weigh in morning · after bathroom · before eating</label>
+      <div class="weight-row">
+        <input type="number" inputmode="decimal" class="weight-input" id="weightInput" placeholder="189" step="0.1">
+        <span class="weight-unit">lbs</span>
+      </div>
+      <p class="weight-goal">Goal <strong>140 lbs</strong> · Started at <strong>189 lbs</strong></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">My daily 8</h2>
+    <ul class="checklist card" id="checklist"></ul>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">What I can eat today</h2>
+    <div class="foods" id="foods"></div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title">Avoid these today</h2>
+    <div class="card avoid-card">
+      <p class="avoid-title"><svg class="icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg>Off the menu</p>
+      <ul class="avoid-list" id="avoidList"></ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="section-title"><label for="notes">How I felt today</label></h2>
+    <div class="card notes-card">
+      <textarea class="notes" id="notes" placeholder="Energy level · mood · any wins · what was hard · what tomorrow needs…"></textarea>
+    </div>
+  </section>
+
+  <button class="save-btn" id="saveBtn" type="button">Save today</button>
+  <p class="save-status" id="saveStatus" role="status" aria-live="polite"></p>
+
+  <footer class="foot">Kaya · proposal C · Bold Daily</footer>
+</main>
+
+
+<script>
+const ICONS = {
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>',
+  drop: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 5.5 12 3c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/>',
+  cup: '<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2M10 2v2M14 2v2"/>',
+  fish: '<path d="M3 12c3-4 7-6 11-6 3 0 5.5 2 7 6-1.5 4-4 6-7 6-4 0-8-2-11-6z"/><path d="M3 12 1 8M3 12l-2 4"/><circle cx="16" cy="11" r=".8"/>',
+  plate: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  weights: '<path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"/>',
+  ban: '<circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/>',
+  moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  grain: '<path d="M12 22V9"/><path d="M12 9c-2.5-.5-4-2.5-4-5 2.5.5 4 2.5 4 5Zm0 0c2.5-.5 4-2.5 4-5-2.5.5-4 2.5-4 5Zm0 6c-2.5-.5-4-2.5-4-5 2.5.5 4 2.5 4 5Zm0 0c2.5-.5 4-2.5 4-5-2.5.5-4 2.5-4 5Z"/>',
+  leaf: '<path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.9-5.4 5.1-6C9.5 14.5 12 13 13 12"/>',
+  seed: '<circle cx="12" cy="13" r="8"/><circle cx="12" cy="14.5" r="3"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  chevron: '<path d="m6 9 6 6 6-6"/>',
+};
+const icon = (n, cls = 'icon') => `<svg class="${cls}" aria-hidden="true" viewBox="0 0 24 24">${ICONS[n]}</svg>`;
+
+const HABITS = [
+  ['walk', 'sun', 'Morning fasted walk', '20–30 min · water + green tea only · before any food'],
+  ['water', 'drop', 'Drink 2.5L water', '10 glasses throughout the day'],
+  ['tea', 'cup', 'Green tea — 2 cups', 'Morning + afternoon · no sugar'],
+  ['protein', 'fish', 'Hit 150g protein', 'Fish · turkey · Greek yoghurt · cottage cheese · protein shake'],
+  ['meals', 'plate', '3 clean meals — under 1,900 kcal', 'No processed food · whole wheat only · no sugary drinks'],
+  ['gym', 'weights', 'Gym — weights first, then stairmaster', '45 min weights · 15 min stairmaster after'],
+  ['sugar', 'ban', 'No sugar · no juice · no alcohol', 'Sugary drinks go straight to belly fat'],
+  ['sleep', 'moon', 'Sleep 7–8 hours', 'Poor sleep = more cortisol = more belly fat'],
+];
+const FOODS = [
+  ['fish', 'Proteins', 'pick 3 today', ['<b>Fish</b> salmon · tuna · cod · tilapia · sardines', '<b>Turkey</b> ground turkey · turkey breast slices', '<b>Beef</b> lean ground beef 95% · lean steak', '<b>Greek yoghurt</b> plain · 0% or 2% fat · 200g', '<b>Cottage cheese</b> low fat · 200g', '<b>Protein powder</b> whey or plant based · 1 scoop', '<b>Tofu / tempeh</b> if you like them', '<b>Shrimp / prawns</b> grilled or sautéed']],
+  ['grain', 'Carbs', 'small portions only', ['<b>Sweet potato</b> best choice for fat loss', '<b>Brown rice</b> 100g cooked max', '<b>Quinoa</b> 100g cooked', '<b>Whole wheat bread</b> 1 slice max', '<b>Whole wheat pasta</b> 100g cooked max', '<b>Oats</b> 50g dry · breakfast only', '<b>Banana</b> 1 per day · before workout', '<b>Apple</b> best snack option']],
+  ['leaf', 'Vegetables', 'eat unlimited', ['<b>Broccoli</b>', '<b>Spinach + mixed greens</b> fill half the plate', '<b>Bell peppers</b> all colors', '<b>Cucumber</b> great snack', '<b>Tomatoes</b> cherry or large', '<b>Cauliflower</b> roasted or steamed', '<b>Zucchini</b> grilled or sautéed', '<b>Asparagus · green beans · brussels sprouts</b>']],
+  ['seed', 'Healthy fats', 'small amounts', ['<b>Avocado</b> ½ per day', '<b>Olive oil</b> 1 tbsp for cooking or dressing', '<b>Almonds</b> 15g (small handful) max', '<b>Walnuts</b> 15g max', '<b>Chia seeds</b> 1 tbsp on yoghurt', '<b>Flax seeds</b> 1 tbsp · great fiber', '<b>Tahini</b> 1 tbsp on salad']],
+];
+const AVOID = ['Eggs', 'Chicken', 'Milk', 'Beans', 'White bread', 'White pasta', 'Pastries', 'Sugar', 'Juice', 'Soda', 'Alcohol', 'Fried food', 'Vegetable oil'];
+
+// Render
+document.getElementById('checklist').innerHTML = HABITS.map(([id, ic, text, note]) => `
+  <li><button type="button" class="check" data-id="${id}" aria-pressed="false">
+    <span class="tick">${icon('check')}</span>
+    ${icon(ic, 'icon habit-icon')}
+    <span class="check-body"><span class="check-text">${text}</span><span class="check-note">${note}</span></span>
+  </button></li>`).join('');
+document.getElementById('foods').innerHTML = FOODS.map(([ic, title, sub, items], i) => `
+  <div class="food card">
+    <button type="button" class="food-head" aria-expanded="false" aria-controls="food${i}">
+      ${icon(ic)}<span class="food-title">${title}</span><span class="food-sub">${sub}</span>${icon('chevron', 'icon chev')}
+    </button>
+    <ul class="food-list" id="food${i}" hidden>${items.map(t => `<li>${t}</li>`).join('')}</ul>
+  </div>`).join('');
+document.getElementById('avoidList').innerHTML = AVOID.map(t => `<li>${t}</li>`).join('');
+
+// Date + day count
+const today = new Date();
+document.getElementById('todayDate').textContent = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+const startDate = new Date(2026, 3, 6); // adjust to actual start
+const dayCount = Math.max(1, Math.floor((today - startDate) / 86400000) + 1);
+document.getElementById('dayCount').textContent = Math.min(dayCount, 90);
+
+// Storage (same keys as the original page, so saved days carry over)
+const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+let state = { checks: {}, weight: '', notes: '' };
+try { state = JSON.parse(localStorage.getItem('checkin_' + dateKey)) || state; } catch (e) {}
+const persist = () => { try { localStorage.setItem('checkin_' + dateKey, JSON.stringify(state)); return true; } catch (e) { return false; } };
+
+const checks = [...document.querySelectorAll('.check')];
+checks.forEach(b => {
+  b.setAttribute('aria-pressed', !!state.checks[b.dataset.id]);
+  b.addEventListener('click', () => {
+    const on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', on);
+    state.checks[b.dataset.id] = on;
+    persist();
+    updateProgress();
+  });
+});
+document.querySelectorAll('.food-head').forEach(h => h.addEventListener('click', () => {
+  const open = h.getAttribute('aria-expanded') !== 'true';
+  h.setAttribute('aria-expanded', open);
+  document.getElementById(h.getAttribute('aria-controls')).hidden = !open;
+}));
+
+const weight = document.getElementById('weightInput');
+const notes = document.getElementById('notes');
+weight.value = state.weight || '';
+notes.value = state.notes || '';
+weight.addEventListener('change', () => { state.weight = weight.value; persist(); });
+notes.addEventListener('blur', () => { state.notes = notes.value; persist(); });
+
+function updateProgress() {
+  const done = checks.filter(b => b.getAttribute('aria-pressed') === 'true').length;
+  const pct = done / checks.length * 100;
+  document.getElementById('completedCount').textContent = done;
+  document.getElementById('barFill').style.width = pct + '%';
+  document.getElementById('ringFill').style.strokeDasharray = `${pct} 100`;
+}
+updateProgress();
+
+const btn = document.getElementById('saveBtn');
+const status = document.getElementById('saveStatus');
+let t;
+btn.addEventListener('click', () => {
+  state.weight = weight.value;
+  state.notes = notes.value;
+  const ok = persist();
+  btn.classList.toggle('saved', ok);
+  btn.textContent = ok ? 'Saved' : 'Save today';
+  status.textContent = ok ? 'Today is saved.' : 'Couldn’t save — this browser is blocking storage.';
+  clearTimeout(t);
+  t = setTimeout(() => { btn.textContent = 'Save today'; btn.classList.remove('saved'); status.textContent = ''; }, 2500);
+});
+</script>
+
+</body>
+</html>
