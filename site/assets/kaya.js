@@ -19,7 +19,7 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 const art = (p, cls = 'art') => `<svg class="${cls}" viewBox="${p.vb}" aria-hidden="true"><use href="#${p.art}"/></svg>`;
 
 function productCard(p) {
-  return `<li class="reveal"><a class="pcard" href="product.html?id=${p.id}">
+  return `<li class="reveal"><a class="pcard" href="product.html#${p.id}">
     <div class="pcard-img card">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}${art(p)}</div>
     <div class="pcard-meta"><h3 class="t-h3">${esc(p.name)}</h3><span class="t-small">From <span class="ph">[SAR —]</span></span></div>
     <div class="pcard-meta"><span class="t-small">${esc(p.meta)}</span><span class="swatches" aria-label="${p.finishes.length} finishes">${p.finishes.map(f => `<i style="background:${f[1]}"></i>`).join('')}</span></div>
@@ -65,7 +65,7 @@ function initHome() {
 function initCatalog() {
   const grid = $('#catalogGrid'); if (!grid) return;
   const params = new URLSearchParams(location.search);
-  const pre = params.get('cat');
+  const pre = params.get('cat') || location.hash.slice(1);
   const catBox = $('#fCat'), matBox = $('#fMat');
   const count = (key, v) => PRODUCTS.filter(p => p[key] === v).length;
   catBox.innerHTML += Object.entries(CATS).map(([k, v]) => `<label class="check"><input type="checkbox" name="cat" value="${k}" ${pre === k ? 'checked' : ''}> ${v}<span class="t-small count">${count('cat', k)}</span></label>`).join('');
@@ -96,12 +96,12 @@ function initCatalog() {
 /* ---------- Product ---------- */
 function initProduct() {
   const root = $('#pdp'); if (!root) return;
-  const id = new URLSearchParams(location.search).get('id');
+  const id = new URLSearchParams(location.search).get('id') || location.hash.slice(1);
   const p = PRODUCTS.find(x => x.id === id) || PRODUCTS[0];
   document.title = `${p.name} — Kaya`;
   $$('.js-name').forEach(el => el.textContent = p.name);
   $('.js-cat').textContent = CATS[p.cat];
-  $('.js-cat').href = `catalog.html?cat=${p.cat}`;
+  $('.js-cat').href = `catalog.html#${p.cat}`;
   $('.js-meta').textContent = p.meta;
   if (p.badge) { $('.js-badge').textContent = p.badge; $('.js-badge').hidden = false; }
 
@@ -134,7 +134,10 @@ function initProduct() {
   $('#dims').innerHTML = p.dims.map(([k, v]) => `<tr><th scope="row">${k}</th><td>${v}</td></tr>`).join('');
 
   // CTAs carry the selection
-  const link = base => `${base}?product=${encodeURIComponent(p.id)}&qty=${q.value}&finish=${encodeURIComponent($('input[name=finish]:checked').value)}`;
+  const link = base => {
+    try { sessionStorage.setItem('kaya-sel', JSON.stringify({ product: p.id, qty: q.value, finish: $('input[name=finish]:checked').value })); } catch (e) {}
+    return `${base}#${p.id}`;
+  };
   $('#enquireBtn').addEventListener('click', () => location.href = link('contact.html'));
   $('#wholesaleBtn').addEventListener('click', () => location.href = link('wholesale.html'));
 
@@ -182,8 +185,12 @@ function wireForm(form, onSuccess) {
 
 function prefillFromQuery(form) {
   const q = new URLSearchParams(location.search);
-  const p = PRODUCTS.find(x => x.id === q.get('product'));
-  return { p, qty: q.get('qty'), finish: q.get('finish') };
+  const p = PRODUCTS.find(x => x.id === (q.get('product') || location.hash.slice(1)));
+  if (!p) return {};
+  let sel = {};
+  try { sel = JSON.parse(sessionStorage.getItem('kaya-sel')) || {}; } catch (e) {}
+  const same = sel.product === p.id;
+  return { p, qty: q.get('qty') || (same ? sel.qty : ''), finish: q.get('finish') || (same ? sel.finish : '') };
 }
 
 function initWholesale() {
@@ -217,6 +224,9 @@ function initContact() {
   if (p) { $('#c-subject').value = 'product'; $('#c-msg').value = `I'd like to know more about the ${p.name}${finish ? ` (${finish})` : ''}.`; }
   wireForm(form, () => { form.hidden = true; $('#contactSuccess').classList.add('show'); $('#contactSuccess').focus(); });
 }
+
+// Same-page hash links (e.g. footer room links while on the catalog) re-run the page
+window.addEventListener('hashchange', () => { if (PRODUCTS.some(p => p.id === location.hash.slice(1)) || CATS[location.hash.slice(1)]) location.reload(); });
 
 document.addEventListener('DOMContentLoaded', () => {
   initGlobal(); initHome(); initCatalog(); initProduct(); initWholesale(); initContact();

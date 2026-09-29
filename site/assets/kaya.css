@@ -71,7 +71,7 @@ h3,.t-h3{font-size:18px;font-weight:400;letter-spacing:0;line-height:1.4;color:v
 /* ---------- Announcement + Nav ---------- */
 .announce{background:var(--color-ink);color:var(--color-white);text-align:center;padding:var(--s2) var(--gutter);font-size:11px;letter-spacing:.04em}
 .announce a{text-decoration:underline;text-underline-offset:3px}
-.nav{position:sticky;top:0;z-index:50;background:var(--color-white);border-bottom:1px solid var(--color-stone)}
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:var(--color-white);border-bottom:1px solid var(--color-stone)}
 .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:var(--s5);height:64px}
 .logo{font-size:18px;font-weight:500;letter-spacing:.4em;color:var(--color-ink)}
 .nav-links{display:flex;gap:var(--s6)}
@@ -293,6 +293,4 @@ footer{background:var(--color-white);border-top:1px solid var(--color-stone);pad
 @media (max-width:768px){.foot-grid{grid-template-columns:1fr 1fr}.foot-grid>div:first-child{grid-column:1/-1}}
 
 /* ---------- Motion ---------- */
-.reveal{opacity:0;transform:translateY(12px);transition:opacity .6s ease,transform .6s ease}
-.reveal.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.reveal{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

@@ -5,8 +5,8 @@ Static HTML/CSS/JS. Open `index.html` in a browser, no build step needed.
 | Page | File |
 |---|---|
 | Homepage | `index.html` |
-| Product catalog (filter by room/material, sort; `?cat=dining` deep links) | `catalog.html` |
-| Single product (finish, quantity, dimensions; `?id=sora-dining-table`) | `product.html` |
+| Product catalog (filter by room/material, sort; `#dining` deep links) | `catalog.html` |
+| Single product (finish, quantity, dimensions; `#sora-dining-table`) | `product.html` |
 | Wholesale quote request (multi-product lines, file upload) | `wholesale.html` |
 | About / Our story | `about.html` |
 | Contact (form, showroom details, FAQ) | `contact.html` |
