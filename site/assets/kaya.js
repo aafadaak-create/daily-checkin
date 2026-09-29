@@ -10,6 +10,17 @@ const PRODUCTS = [
   { id: 'ember-lamp', name: 'Ember Floor Lamp', cat: 'decor', material: 'metal', art: 'lamp', vb: '0 0 120 140', meta: 'Linen shade · brushed brass', badge: '', finishes: [['Brass', '#B9975B'], ['Black', '#1A1A1A']], dims: [['Shade diameter', '45 cm'], ['Height', '160 cm']] },
   { id: 'olea-planter', name: 'Olea Planter', cat: 'decor', material: 'stone', art: 'plant', vb: '0 0 120 140', meta: 'Hand-finished concrete', badge: '', finishes: [['Grey', '#A9A9A4'], ['Off-white', '#EFEDE7']], dims: [['Diameter', '40 cm'], ['Height', '45 cm']] },
 ];
+// Collections: each groups pieces that share a design language (placeholder names)
+const COLLECTIONS = {
+  arden: { name: 'Arden', note: 'Low, deep seating in natural linen and solid oak.', ids: ['arden-sofa', 'lune-lounge', 'halo-side'] },
+  sora: { name: 'Sora', note: 'Dining in solid oak and ash, made for long dinners.', ids: ['sora-dining-table', 'rhea-chair'] },
+  noma: { name: 'Noma', note: 'Soft upholstery and warm light for the bedroom.', ids: ['noma-bed', 'ember-lamp', 'olea-planter'] },
+};
+Object.entries(COLLECTIONS).forEach(([k, c]) => c.ids.forEach(id => { const p = PRODUCTS.find(x => x.id === id); p.collection = k; p.designer = '[Designer]'; }));
+const tint = c => `--tint:${c}`;
+const getFinish = id => { try { return +sessionStorage.getItem('kaya-finish-' + id) || 0; } catch (e) { return 0; } };
+const setFinish = (id, i) => { try { sessionStorage.setItem('kaya-finish-' + id, i); } catch (e) {} };
+
 const CATS = { living: 'Living', dining: 'Dining', bedroom: 'Bedroom', decor: 'Décor' };
 const MATERIALS = { wood: 'Wood', fabric: 'Upholstery', stone: 'Stone', metal: 'Metal' };
 
@@ -19,12 +30,27 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;'
 const art = (p, cls = 'art') => `<svg class="${cls}" viewBox="${p.vb}" aria-hidden="true"><use href="#${p.art}"/></svg>`;
 
 function productCard(p) {
-  return `<li class="reveal"><a class="pcard" href="product.html#${p.id}">
-    <div class="pcard-img card">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}${art(p)}</div>
-    <div class="pcard-meta"><h3 class="t-h3">${esc(p.name)}</h3><span class="t-small">${CATS[p.cat]}</span></div>
-    <div class="pcard-meta"><span class="t-small">${esc(p.meta)}</span><span class="swatches" aria-label="${p.finishes.length} finishes">${p.finishes.map(f => `<i style="background:${f[1]}"></i>`).join('')}</span></div>
-  </a></li>`;
+  const fi = Math.min(getFinish(p.id), p.finishes.length - 1);
+  return `<li><article class="pcard" data-id="${p.id}">
+    <a class="pcard-link" href="product.html#${p.id}">
+      <div class="pcard-img card" style="${tint(p.finishes[fi][1])}">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}<span class="pcard-finish t-small">${esc(p.finishes[fi][0])}</span>${art(p)}</div>
+      <div class="pcard-meta"><h3 class="t-h3">${esc(p.name)}</h3><span class="t-small">${COLLECTIONS[p.collection].name} collection</span></div>
+    </a>
+    <div class="pcard-meta"><span class="t-small">${esc(p.meta)}</span>
+      <div class="swatches" role="group" aria-label="Finishes for ${esc(p.name)}">${p.finishes.map(([n, c], i) => `<button type="button" class="swatch" style="${tint(c)}" data-i="${i}" aria-label="${esc(n)}" aria-pressed="${i === fi}"></button>`).join('')}</div>
+    </div>
+  </article></li>`;
 }
+
+// Card swatches: tone-on-tone preview of each finish, remembered for the product page
+document.addEventListener('click', e => {
+  const b = e.target.closest('.swatch'); if (!b) return;
+  const card = b.closest('.pcard'), p = PRODUCTS.find(x => x.id === card.dataset.id), i = +b.dataset.i;
+  $('.pcard-img', card).style.setProperty('--tint', p.finishes[i][1]);
+  $('.pcard-finish', card).textContent = p.finishes[i][0];
+  $$('.swatch', card).forEach((s, j) => s.setAttribute('aria-pressed', i === j));
+  setFinish(p.id, i);
+});
 
 /* ---------- Global: nav, reveal, year ---------- */
 function initGlobal() {
@@ -66,16 +92,30 @@ function initCatalog() {
   const grid = $('#catalogGrid'); if (!grid) return;
   const params = new URLSearchParams(location.search);
   const pre = params.get('cat') || location.hash.slice(1);
-  const catBox = $('#fCat'), matBox = $('#fMat');
+  const catBox = $('#fCat'), matBox = $('#fMat'), colBox = $('#fCol');
+  colBox.innerHTML += Object.entries(COLLECTIONS).map(([k, c]) => `<label class="check"><input type="checkbox" name="col" value="${k}" ${pre === k ? 'checked' : ''}> ${c.name}<span class="t-small count">${c.ids.length}</span></label>`).join('');
+  $('#collections').innerHTML = Object.entries(COLLECTIONS).map(([k, c]) => {
+    const lead = PRODUCTS.find(p => p.id === c.ids[0]);
+    return `<li><button type="button" class="coll card" data-col="${k}" style="${tint(lead.finishes[0][1])}">
+      ${art(lead)}<span class="coll-text"><span class="t-label">Collection</span><span class="t-h2">${c.name}</span><span class="t-small">${c.note}</span><span class="t-small ink">${c.ids.length} pieces</span></span></button></li>`;
+  }).join('');
+  $$('.coll').forEach(b => b.addEventListener('click', () => {
+    $$('.filters input').forEach(i => i.checked = i.name === 'col' && i.value === b.dataset.col);
+    $('#catalogTitle').textContent = `${COLLECTIONS[b.dataset.col].name} collection`;
+    render();
+    $('#catalogTitle').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }));
   const count = (key, v) => PRODUCTS.filter(p => p[key] === v).length;
   catBox.innerHTML += Object.entries(CATS).map(([k, v]) => `<label class="check"><input type="checkbox" name="cat" value="${k}" ${pre === k ? 'checked' : ''}> ${v}<span class="t-small count">${count('cat', k)}</span></label>`).join('');
   matBox.innerHTML += Object.entries(MATERIALS).map(([k, v]) => `<label class="check"><input type="checkbox" name="mat" value="${k}"> ${v}<span class="t-small count">${count('material', k)}</span></label>`).join('');
   if (pre && CATS[pre]) $('#catalogTitle').textContent = CATS[pre];
+  if (pre && COLLECTIONS[pre]) $('#catalogTitle').textContent = `${COLLECTIONS[pre].name} collection`;
 
   const render = () => {
     const cats = $$('input[name=cat]:checked').map(i => i.value);
     const mats = $$('input[name=mat]:checked').map(i => i.value);
-    let list = PRODUCTS.filter(p => (!cats.length || cats.includes(p.cat)) && (!mats.length || mats.includes(p.material)));
+    const cols = $$('input[name=col]:checked').map(i => i.value);
+    let list = PRODUCTS.filter(p => (!cats.length || cats.includes(p.cat)) && (!mats.length || mats.includes(p.material)) && (!cols.length || cols.includes(p.collection)));
     const sort = $('#sort').value;
     if (sort === 'az') list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     if (sort === 'za') list = [...list].sort((a, b) => b.name.localeCompare(a.name));
@@ -85,7 +125,7 @@ function initCatalog() {
     observeReveal();
   };
   const clear = () => { $$('.filters input').forEach(i => i.checked = false); $('#catalogTitle').textContent = 'All furniture'; render(); };
-  $('#filters').addEventListener('change', render);
+  $('#filters').addEventListener('change', () => { $('#catalogTitle').textContent = 'All furniture'; render(); });
   $('#sort').addEventListener('change', render);
   $('#clearFilters').addEventListener('click', clear);
   const ft = $('#filtersToggle');
@@ -103,6 +143,14 @@ function initProduct() {
   $('.js-cat').textContent = CATS[p.cat];
   $('.js-cat').href = `index.html#${p.cat}`;
   $('.js-meta').textContent = p.meta;
+  const col = COLLECTIONS[p.collection];
+  $('.js-coll').innerHTML = `<a href="index.html#${p.collection}" class="ink" style="text-decoration:underline">${col.name} collection</a> · Design by <span class="ph">${p.designer}</span>`;
+  $('#features').innerHTML = [
+    ['i-leaf', MATERIALS[p.material], 'Main material'],
+    ['i-tag', `${p.finishes.length} finishes`, 'Tone-on-tone options'],
+    ['i-ruler', 'Custom sizes', 'Made to order'],
+    ['i-box', 'Volume orders', 'For homes and projects'],
+  ].map(([ic, t, s]) => `<li><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#${ic}"/></svg></span><span><span class="ink">${t}</span><br><span class="t-small">${s}</span></span></li>`).join('');
   if (p.badge) { $('.js-badge').textContent = p.badge; $('.js-badge').hidden = false; }
 
   // Gallery: four placeholder "views" of the drawing
@@ -118,9 +166,15 @@ function initProduct() {
   show(0);
 
   // Finishes
-  $('#finishes').innerHTML = p.finishes.map(([n, c], i) => `<label class="finish"><input type="radio" name="finish" value="${esc(n)}" ${i ? '' : 'checked'}><span><i style="background:${c}"></i>${esc(n)}</span></label>`).join('');
+  const fi = Math.min(getFinish(p.id), p.finishes.length - 1);
+  $('#finishes').innerHTML = p.finishes.map(([n, c], i) => `<label class="finish"><input type="radio" name="finish" value="${esc(n)}" data-i="${i}" ${i === fi ? 'checked' : ''}><span><i style="background:${c}"></i>${esc(n)}</span></label>`).join('');
   const fl = $('#finishLabel');
-  const syncFinish = () => fl.textContent = $('input[name=finish]:checked').value;
+  const syncFinish = () => {
+    const input = $('input[name=finish]:checked'), i = +input.dataset.i;
+    fl.textContent = input.value;
+    [main, ...$$('.thumb')].forEach(el => el.style.setProperty('--tint', p.finishes[i][1]));
+    setFinish(p.id, i);
+  };
   $('#finishes').addEventListener('change', syncFinish); syncFinish();
 
   // Qty
