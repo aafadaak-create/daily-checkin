@@ -1,11 +1,11 @@
 # Kaya Chairs — prototype
 
 Static site for Kaya Chairs (SF Bay Area wholesaler of Turkish-made commercial chairs).
-Vela colours (navy `#0E1726`, gold `#C9A56B`) with Hulics-style outline branding.
+Light retail layout (white, pastel pink/blue/mint panels, orange `#F08A1C` accents, teal `#1F6D6E` footer) with the Kaya chair-K logo.
 
 | Page | File | Combines |
 |---|---|---|
-| Home | `index.html` | Hero, scrolling strip, brand tiles, featured chairs, who we supply, wholesale steps |
+| Home | `index.html` | Hero with orbit ring, category cards, trending chairs, products tabs, wholesale banner, guides |
 | Collection & Wholesale | `collection.html` | Chair range with colours and "Add to quote", wholesale steps, LCL vs FCL shipping |
 | About & Lookbook | `about.html` | Story, Türkiye → Bay Area route, values, lookbook |
 | Quote & Contact | `contact.html` | Quote form (pre-filled from chairs you added), contact details, FAQ |

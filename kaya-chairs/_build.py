@@ -3,12 +3,12 @@ from pathlib import Path
 
 OUT = Path(__file__).parent
 
-# ---- Brand marks: Hulics-style outline letters (drawn as outlined block letters) ----
-K = "M0 0H6V16L16 0H23L12 17L24 40H17L8 22L6 25V40H0Z"
-A = "M0 40L9 0H15L24 40H18L16.2 31H7.8L6 40ZM9.2 25H14.8L12 11.5Z"
-Y = "M0 0H6.5L12 15L17.5 0H24L15 23V40H9V23Z"
-WORD = f'<path d="{K}"/><path transform="translate(30 0)" d="{A}"/><path transform="translate(60 0)" d="{Y}"/><path transform="translate(90 0)" d="{A}"/>'
-MONO = f'<rect x="0.5" y="0.5" width="39" height="55"/><path transform="translate(8 8)" d="{K}"/>'
+# ---- Brand marks: the original Kaya chair-K ----
+# Mark: a K drawn as a chair in side view (back, arm, seat, front leg).
+MARK = '<path d="M12 6V34M12 21 28 6M12 21H28V34"/>'
+# Wordmark: thin capitals; the K repeats the chair seat, the A's have no crossbar.
+WORD = ('<path d="M1 1V17M1 10.5 10.5 1M1 10.5H10.5V17"/><path d="M21 17 27 1 33 17"/>'
+        '<path d="M43 1 49 9 55 1M49 9V17"/><path d="M65 17 71 1 77 17"/>')
 
 CHAIRS = {
   "c-rib": "M34 14Q60 8 86 14L84 70H36ZM44 12V70M52 11V70M60 10.5V70M68 11V70M76 12V70M30 70H90L94 82H26ZM30 82L25 132M90 82L95 132M42 82L44 124M78 82L76 124",
@@ -40,19 +40,25 @@ ICONS = {
   "factory": '<path d="M2 21V10l6 4V10l6 4V6l8 4v11z"/><path d="M6 17h2M11 17h2M16 17h2"/>',
   "handshake": '<path d="M2 12l4-4 4 2 4-3 4 3 4 2M6 8v6l5 5 2-2M13 17l2 2 3-3M10 14l2 2"/>',
   "layers": '<path d="M12 3 2 8l10 5 10-5z"/><path d="M2 13l10 5 10-5"/>',
+  "clipboard": '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6"/>',
+  "sparkle": '<path d="M12 3c.5 4 2 6.5 6 7-4 .5-5.5 3-6 7-.5-4-2-6.5-6-7 4-.5 5.5-3 6-7z"/>',
+  "calendar": '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',
+  "user": '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+  "insta": '<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/>',
+  "linkedin": '<path d="M4 9h4v11H4zM6 4.5a1 1 0 1 0 0 .1M10 9h4v2c1-1.5 2.2-2 3.5-2 2 0 2.5 1.5 2.5 3.5V20h-4v-6c0-1-.5-1.5-1.3-1.5S14 13 14 14v6h-4z"/>',
+  "whatsapp": '<path d="M4 20l1.4-4A8 8 0 1 1 8 18.6z"/><path d="M9 9c0 3 2.5 6 6 6l1-1.5-2-1-1 .8c-1-.4-2-1.4-2.3-2.3l.8-1-1-2z"/>',
 }
 
 SPRITE = ('<svg width="0" height="0" style="position:absolute" aria-hidden="true">'
   + "".join(f'<symbol id="i-{k}" viewBox="0 0 24 24">{v}</symbol>' for k, v in ICONS.items())
   + "".join(f'<symbol id="{k}" viewBox="0 0 120 140"><path d="{v}"/></symbol>' for k, v in CHAIRS.items())
-  + f'<symbol id="kaya-word" viewBox="-1 -1 116 42"><g class="outline">{WORD}</g></symbol>'
-  + f'<symbol id="kaya-mono" viewBox="0 0 40 56"><g class="outline">{MONO}</g></symbol>'
+  + f'<symbol id="kaya-mark" viewBox="0 0 40 40"><g class="mark-stroke" stroke-width="2.6">{MARK}</g></symbol>'
+  + f'<symbol id="kaya-word" viewBox="0 0 78 18"><g class="mark-stroke" stroke-width="1.4">{WORD}</g></symbol>'
   + '</svg>')
 
 FAVICON = ("data:image/svg+xml," + (
-  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 56'><rect width='40' height='56' fill='%230E1726'/>"
-  "<g fill='none' stroke='%23C9A56B' stroke-width='2'><rect x='4' y='4' width='32' height='48'/>"
-  f"<path transform='translate(11 12) scale(.75)' d='{K}'/></g></svg>").replace(" ", "%20"))
+  "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><rect width='40' height='40' rx='10' fill='%23F08A1C'/>"
+  "<g fill='none' stroke='%231E1E1E' stroke-width='3' stroke-linecap='square'>" + MARK.replace('"', "'") + "</g></svg>").replace(" ", "%20"))
 
 
 def i(name):
@@ -64,11 +70,11 @@ def chair(cid, cls="art"):
 
 
 LOGO = ('<a href="index.html" class="logo" aria-label="Kaya Chairs, home">'
-        '<svg class="mono" aria-hidden="true"><use href="#kaya-mono"/></svg>'
-        '<svg class="word" aria-hidden="true"><use href="#kaya-word"/></svg>'
-        '<span class="tag">Chairs</span></a>')
+        '<svg class="mono" viewBox="0 0 40 40" aria-hidden="true"><use href="#kaya-mark"/></svg>'
+        '<span class="logo-rule"></span>'
+        '<svg class="word" viewBox="0 0 78 18" aria-hidden="true"><use href="#kaya-word"/></svg></a>')
 
-NAV = [("collection.html", "Collection"), ("about.html", "About"), ("contact.html", "Contact")]
+NAV = [("index.html", "Home"), ("collection.html", "Collection"), ("about.html", "About"), ("contact.html", "Contact")]
 
 
 def header(active):
@@ -81,7 +87,8 @@ def header(active):
     {LOGO}
     <nav class="nav" aria-label="Main">{links}</nav>
     <div class="header-end">
-      <a href="contact.html" class="btn btn-gold">Get a Quote <span class="quote-count" hidden></span></a>
+      <a href="contact.html" class="icon-link" aria-label="Your quote list">{i('clipboard')}<span class="quote-count" hidden></span></a>
+      <a href="contact.html" class="btn btn-orange">Get a Quote</a>
       <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">{i('menu')}</button>
     </div>
   </div>
@@ -89,19 +96,19 @@ def header(active):
 </header>"""
 
 
-FOOTER = f"""<footer class="footer navy">
+FOOTER = f"""<footer class="footer">
   <div class="container">
-    <svg class="footer-word" viewBox="-1 -1 116 42" role="img" aria-label="Kaya"><use href="#kaya-word"/></svg>
     <div class="footer-grid">
-      <div class="stack">
-        <p class="navy-text-muted" style="max-width:340px">Turkish-crafted commercial chairs, supplied wholesale from the San Francisco Bay Area.</p>
-        <p class="small" style="display:flex;gap:8px;align-items:center;color:var(--gold)">{i('pin')}<span style="color:var(--on-navy)">San Francisco Bay Area, CA</span></p>
+      <div>
+        {LOGO}
+        <p>Turkish-crafted commercial chairs, supplied wholesale from the San Francisco Bay Area, CA.</p>
+        <div class="socials"><a href="#" aria-label="Instagram (link coming)">{i('insta')}</a><a href="#" aria-label="LinkedIn (link coming)">{i('linkedin')}</a><a href="#" aria-label="WhatsApp (link coming)">{i('whatsapp')}</a></div>
       </div>
-      <div><span class="label">Collection</span><ul class="small"><li><a href="collection.html#dining">Dining</a></li><li><a href="collection.html#bar">Bar &amp; counter</a></li><li><a href="collection.html#lounge">Lounge</a></li><li><a href="collection.html#outdoor">Outdoor</a></li></ul></div>
-      <div><span class="label">Wholesale</span><ul class="small"><li><a href="collection.html#wholesale">How it works</a></li><li><a href="collection.html#shipping">LCL &amp; FCL shipping</a></li><li><a href="contact.html">Get a quote</a></li></ul></div>
-      <div><span class="label">Company</span><ul class="small"><li><a href="about.html">About</a></li><li><a href="about.html#lookbook">Lookbook</a></li><li><a href="contact.html#faq">FAQ</a></li></ul></div>
+      <div><span class="label">Collection</span><ul><li><a href="collection.html#dining">Dining</a></li><li><a href="collection.html#bar">Bar &amp; counter</a></li><li><a href="collection.html#lounge">Lounge</a></li><li><a href="collection.html#outdoor">Outdoor</a></li></ul></div>
+      <div><span class="label">Wholesale</span><ul><li><a href="collection.html#wholesale">How it works</a></li><li><a href="collection.html#shipping">LCL &amp; FCL shipping</a></li><li><a href="contact.html">Get a quote</a></li></ul></div>
+      <div><span class="label">Company</span><ul><li><a href="about.html">About</a></li><li><a href="about.html#lookbook">Lookbook</a></li><li><a href="contact.html#faq">FAQ</a></li></ul></div>
     </div>
-    <div class="footer-bottom"><span>© <span class="js-year"></span> Kaya Chairs. All rights reserved.</span><span>Prototype · placeholder content</span></div>
+    <div class="footer-bottom">© <span class="js-year"></span> Kaya Chairs · San Francisco Bay Area, CA · Prototype with placeholder content</div>
   </div>
 </footer>
 <script src="assets/kc.js"></script>"""
@@ -118,7 +125,7 @@ def page(filename, title, desc, body, active=None):
 <link rel="icon" href="{FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/kc.css">
 </head>
 <body>
@@ -133,119 +140,128 @@ def page(filename, title, desc, body, active=None):
     print("wrote", filename)
 
 
-def ticker():
-    items = ["Plenty of styles", "Reliable &amp; strong", "LCL &amp; FCL shipping", "Made in Türkiye", "Based in the SF Bay Area"]
-    mark = '<svg viewBox="0 0 40 56" aria-hidden="true"><use href="#kaya-mono"/></svg>'
-    one = "".join(f'<li class="ticker-item">{mark}{t}</li>' for t in items)
-    return f"""<div class="ticker">
-  <div class="ticker-viewport">
-    <ul class="ticker-track" aria-label="Why Kaya">{one}<li aria-hidden="true" style="display:contents">{one.replace('<li class', '<span class').replace('</li>', '</span>')}</li></ul>
-  </div>
-  <button type="button" class="ticker-toggle" aria-label="Pause scrolling strip">{i('pause')}</button>
-</div>"""
-
-
 def cta_band(title="Furnishing a venue? Get wholesale pricing.", lead="Tell us the models and quantities you need. We reply with pricing, colours and shipping options."):
     return f"""<section class="cta-band pattern">
   <div class="container">
     <span class="eyebrow">Wholesale quote</span>
     <h2 class="h2">{title}</h2>
     <p class="lead">{lead}</p>
-    <a href="contact.html" class="btn btn-gold">Request a Quote {i('arrow')}</a>
+    <a href="contact.html" class="btn btn-orange">Request a Quote {i('arrow')}</a>
   </div>
 </section>"""
 
 
 # ================================================================ HOME
 home = f"""
-<section class="hero navy">
+<section class="hero">
   <div class="container hero-grid">
     <div class="hero-copy">
-      <span class="eyebrow">Contract · Hospitality</span>
-      <h1 class="h-display">Premium seating.<br>Wholesale direct.</h1>
-      <p class="lead">Turkish-crafted commercial chairs, supplied wholesale to restaurants, hotels and event companies from the San Francisco Bay Area.</p>
+      <span class="eyebrow">Contract · Hospitality <svg class="spark" aria-hidden="true"><use href="#i-sparkle"/></svg></span>
+      <h1 class="h-display">Premium <span class="accent">Seating</span>,<br>Wholesale Direct<span class="accent">.</span></h1>
+      <p class="lead">Turkish-crafted commercial chairs for restaurants, hotels and events across the San Francisco Bay Area.</p>
       <div class="hero-ctas">
-        <a href="contact.html" class="btn btn-gold">Request a Quote</a>
-        <a href="collection.html" class="btn btn-line">View Collection</a>
+        <a href="collection.html" class="btn btn-orange">Discover Collection</a>
+        <a href="collection.html#wholesale" class="play"><span class="play-ring"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg></span>How wholesale works</a>
+      </div>
+      <div class="proof">
+        <ul aria-hidden="true"><li>{i('utensils')}</li><li>{i('bed')}</li><li>{i('spark')}</li><li>{i('building')}</li></ul>
+        <p class="small muted">For restaurants, hotels, events and offices</p>
       </div>
     </div>
-    <figure class="hero-visual">
-      <div class="chair-panel">{chair('c-rib')}</div>
-      <svg class="mark" viewBox="0 0 40 56" aria-hidden="true"><use href="#kaya-mono"/></svg>
-      <figcaption>Rib Side Chair · Anthracite</figcaption>
-    </figure>
-  </div>
-  {ticker()}
-</section>
-
-<section class="tiles" aria-label="About Kaya">
-  <div class="tile navy center">
-    <svg class="mono-lg" viewBox="0 0 40 56" role="img" aria-label="Kaya monogram"><use href="#kaya-mono"/></svg>
-    <span class="eyebrow">Est. <span class="ph">[Year]</span> · SF Bay Area</span>
-  </div>
-  <div class="tile paper">
-    <span class="eyebrow">Made in Türkiye</span>
-    <div class="stack">
-      <h2 class="h2">Built by Turkish manufacturers with decades of contract experience.</h2>
-      <p class="muted">Every chair is made in <span class="ph">[city]</span>, Türkiye, tested for commercial use and shipped straight to the Bay Area. No showroom mark-ups, no middlemen.</p>
+    <div class="hero-visual">
+      <div class="glow"></div>
+      <svg class="orbit" viewBox="0 0 500 500" aria-hidden="true">
+        <ellipse cx="250" cy="260" rx="235" ry="120" transform="rotate(-24 250 260)" fill="none" stroke="#1E1E1E" stroke-opacity=".35" stroke-width="1.2"/>
+        <path d="M58 318l6 -10 6 10 -6 10z" fill="#F08A1C"/><path d="M438 176l6-10 6 10-6 10z" fill="#F08A1C"/>
+        <path d="M96 118c3 10 7 14 17 17-10 3-14 7-17 17-3-10-7-14-17-17 10-3 14-7 17-17z" fill="#1F6D6E"/>
+        <circle cx="120" cy="352" r="11" fill="#FFFFFF" stroke="#1E1E1E" stroke-opacity=".25"/>
+      </svg>
+      <div class="hero-chair">{chair('c-arm')}</div>
+      <div class="float-card">
+        <div class="row-sb"><strong>Rib Armchair</strong><span class="price">From <span class="ph">[$—]</span></span></div>
+        <span class="small muted">Stackable · indoor / outdoor</span>
+        <hr>
+        <div class="row-sb"><span class="small">Colours</span><span class="swatches" aria-label="Anthracite, Sand, Terracotta"><i class="swatch" style="--tint-c:#3B4150"></i><i class="swatch" style="--tint-c:#D9C7A7"></i><i class="swatch" style="--tint-c:#B86B4B"></i></span></div>
+      </div>
     </div>
-    <a href="about.html" class="link">Our story {i('arrow')}</a>
-  </div>
-  <div class="tile white">
-    {chair('c-rib')}
-    <div class="card-row"><span><strong>Rib Side Chair</strong><br><span class="small muted">Our bestseller · 4 colours</span></span><a href="collection.html#dining" class="link">Shop {i('arrow')}</a></div>
-  </div>
-  <div class="tile pattern center">
-    <svg class="word-lg" viewBox="-1 -1 116 42" role="img" aria-label="Kaya"><use href="#kaya-word"/></svg>
-    <p class="navy-text-muted" style="max-width:360px">Commercial seating stocked for Bay Area venues, with container shipping for projects across the US.</p>
   </div>
 </section>
 
-<section class="section paper">
+<section class="container cats" aria-label="Shop by type">
+  <a class="cat pink" href="collection.html#dining">
+    <div><h2 class="h3">Dining Chairs</h2><p class="small muted">Stackable, indoor and outdoor</p><span class="link">Shop now {i('arrow')}</span></div>
+    {chair('c-rib')}
+  </a>
+  <a class="cat blue" href="collection.html#lounge">
+    <div><h2 class="h3">Lounge &amp; Bar</h2><p class="small muted">Lobby lounges and bar stools</p><span class="link">Shop now {i('arrow')}</span></div>
+    {chair('c-lounge')}
+  </a>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-title"><h2 class="h2">Trending Chairs</h2><p class="muted">Our most requested models for Bay Area restaurants, hotels and event companies.</p></div>
+    <ul class="grid four" id="featured"></ul>
+    <p class="small muted center" style="margin-top:var(--s5)" id="quoteStatus" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
   <div class="container">
     <div class="section-head">
-      <div><span class="eyebrow">The collection</span><h2 class="h2">Chairs built for busy venues</h2></div>
-      <a href="collection.html" class="link">View all models {i('arrow')}</a>
+      <div class="ghost-wrap"><h2 class="ghost-title" data-ghost="Products">Products</h2></div>
+      <div class="tabs" role="group" aria-label="Filter products">
+        <button type="button" class="tab" data-f="all" aria-pressed="true">All</button>
+        <button type="button" class="tab" data-f="dining" aria-pressed="false">Dining</button>
+        <button type="button" class="tab" data-f="bar" aria-pressed="false">Bar</button>
+        <button type="button" class="tab" data-f="lounge" aria-pressed="false">Lounge</button>
+        <button type="button" class="tab" data-f="outdoor" aria-pressed="false">Outdoor</button>
+      </div>
     </div>
-    <ul class="grid four" id="featured"></ul>
-    <p class="small muted" style="margin-top:var(--s5)" id="quoteStatus" role="status" aria-live="polite"></p>
+    <div class="prod-block">
+      <div class="prod-feature blue" id="prodFeature"></div>
+      <ul class="mini-grid" id="miniGrid"></ul>
+    </div>
   </div>
 </section>
 
-<section class="section white">
+<section class="banner mint">
+  <div class="container banner-inner">
+    <div>
+      <span class="small muted">Shipped from Türkiye to the Bay Area</span>
+      <h2 class="h2" style="text-transform:uppercase;margin-top:var(--s2)">Wholesale orders now open</h2>
+      <ul class="banner-points"><li>Plenty of styles</li><li>Reliable &amp; strong</li><li>LCL &amp; FCL shipping</li><li>Made in Türkiye</li></ul>
+      <a href="contact.html" class="btn btn-dark">Request a Quote</a>
+    </div>
+    {chair('c-bistro')}
+  </div>
+</section>
+
+<section class="section">
   <div class="container">
-    <div class="section-head"><div><span class="eyebrow">Who we supply</span><h2 class="h2">Seating for every kind of venue</h2></div></div>
-    <ul class="features">
-      <li class="feature"><span class="icon-box">{i('utensils')}</span><h3 class="h3">Restaurants &amp; cafés</h3><p class="muted">Stackable dining chairs and stools that handle daily service.</p></li>
-      <li class="feature"><span class="icon-box">{i('bed')}</span><h3 class="h3">Hotels</h3><p class="muted">Lobby lounges, room chairs and terrace seating in matching colours.</p></li>
-      <li class="feature"><span class="icon-box">{i('spark')}</span><h3 class="h3">Event companies</h3><p class="muted">Light, stackable chairs that set up and pack down fast.</p></li>
-      <li class="feature"><span class="icon-box">{i('building')}</span><h3 class="h3">Offices &amp; campuses</h3><p class="muted">Cafeteria, breakout and outdoor seating for teams.</p></li>
+    <div class="section-title"><h2 class="h2">Guides</h2><p class="muted">Straight answers for buying commercial chairs wholesale.</p></div>
+    <ul class="guides">
+      <li><a class="guide" href="collection.html#shipping">
+        <div class="guide-img pink">{chair('c-rib')}</div>
+        <div class="guide-meta"><span>{i('user')} Kaya team</span><span>{i('calendar')} <span class="ph">[Date]</span></span></div>
+        <h3 class="h3">LCL or FCL: which shipping fits your order?</h3></a></li>
+      <li><a class="guide" href="collection.html#dining">
+        <div class="guide-img blue">{chair('c-arm')}</div>
+        <div class="guide-meta"><span>{i('user')} Kaya team</span><span>{i('calendar')} <span class="ph">[Date]</span></span></div>
+        <h3 class="h3">Choosing stackable chairs for events and restaurants</h3></a></li>
+      <li><a class="guide" href="contact.html#faq">
+        <div class="guide-img mint">{chair('c-bistro')}</div>
+        <div class="guide-meta"><span>{i('user')} Kaya team</span><span>{i('calendar')} <span class="ph">[Date]</span></span></div>
+        <h3 class="h3">Caring for outdoor chairs in Bay Area weather</h3></a></li>
     </ul>
   </div>
 </section>
-
-<section class="section navy">
-  <div class="container">
-    <div class="section-head">
-      <div><span class="eyebrow">Wholesale</span><h2 class="h2">From Türkiye to your venue in four steps</h2></div>
-      <a href="collection.html#wholesale" class="link">How wholesale works {i('arrow')}</a>
-    </div>
-    <ol class="steps">
-      <li class="step"><h3 class="h3">Choose</h3><p class="navy-text-muted">Pick models and colours from the collection.</p></li>
-      <li class="step"><h3 class="h3">Quote</h3><p class="navy-text-muted">Get pricing for your quantities and shipping.</p></li>
-      <li class="step"><h3 class="h3">Produce</h3><p class="navy-text-muted">Your order is made and checked in Türkiye.</p></li>
-      <li class="step"><h3 class="h3">Deliver</h3><p class="navy-text-muted">Shipped LCL or FCL and delivered to your door.</p></li>
-    </ol>
-  </div>
-</section>
-
-{cta_band()}
 """
 page("index.html", "Kaya Chairs — Premium seating, wholesale direct", "Turkish-crafted commercial chairs, supplied wholesale from the San Francisco Bay Area.", home)
 
 # ================================================================ COLLECTION & WHOLESALE
 collection = f"""
-<section class="page-head navy">
+<section class="page-head blue">
   <div class="container">
     <span class="eyebrow">Collection &amp; Wholesale</span>
     <h1 class="h1">Chairs for every venue</h1>
@@ -273,7 +289,7 @@ collection = f"""
 
 <section class="section white" id="wholesale">
   <div class="container">
-    <div class="section-head"><div><span class="eyebrow">Wholesale</span><h2 class="h2">Wholesale, made simple</h2></div><a href="contact.html" class="btn btn-navy">Request a Quote</a></div>
+    <div class="section-head"><div><span class="eyebrow">Wholesale</span><h2 class="h2">Wholesale, made simple</h2></div><a href="contact.html" class="btn btn-orange">Request a Quote</a></div>
     <ol class="steps paper" style="background:none">
       <li class="step"><h3 class="h3">Choose models &amp; colours</h3><p class="muted">Mix models across your order. Samples available on request.</p></li>
       <li class="step"><h3 class="h3">Get your quote</h3><p class="muted">Pricing by quantity, with LCL or FCL shipping options.</p></li>
@@ -323,18 +339,18 @@ page("collection.html", "Collection & Wholesale — Kaya Chairs", "Browse Kaya's
 
 # ================================================================ ABOUT & LOOKBOOK
 route = f"""<svg class="route" viewBox="0 0 640 220" role="img" aria-label="Route from Türkiye to the San Francisco Bay Area by sea freight">
-  <path d="M60 150 C 200 30, 440 30, 580 150" fill="none" stroke="#C9A56B" stroke-width="1.5" stroke-dasharray="6 6"/>
-  <circle cx="60" cy="150" r="7" fill="#C9A56B"/><circle cx="580" cy="150" r="7" fill="#C9A56B"/>
+  <path d="M60 150 C 200 30, 440 30, 580 150" fill="none" stroke="#F08A1C" stroke-width="1.5" stroke-dasharray="6 6"/>
+  <circle cx="60" cy="150" r="7" fill="#F08A1C"/><circle cx="580" cy="150" r="7" fill="#F08A1C"/>
   <g transform="translate(296 44)" fill="none" stroke="#FFFFFF" stroke-width="1.5"><rect x="0" y="0" width="48" height="24"/><path d="M10 0v24M19 0v24M29 0v24M38 0v24"/></g>
   <text x="60" y="185" text-anchor="middle" fill="#FFFFFF">Türkiye</text>
-  <text x="60" y="205" text-anchor="middle" fill="#A9B3C4" style="font-size:12px">[Port / city]</text>
+  <text x="60" y="205" text-anchor="middle" fill="#D2E4E4" style="font-size:12px">[Port / city]</text>
   <text x="580" y="185" text-anchor="middle" fill="#FFFFFF">SF Bay Area</text>
-  <text x="580" y="205" text-anchor="middle" fill="#A9B3C4" style="font-size:12px">[Warehouse]</text>
-  <text x="320" y="96" text-anchor="middle" fill="#A9B3C4" style="font-size:12px">Sea freight · LCL or FCL · [~n weeks]</text>
+  <text x="580" y="205" text-anchor="middle" fill="#D2E4E4" style="font-size:12px">[Warehouse]</text>
+  <text x="320" y="96" text-anchor="middle" fill="#D2E4E4" style="font-size:12px">Sea freight · LCL or FCL · [~n weeks]</text>
 </svg>"""
 
 about = f"""
-<section class="page-head navy">
+<section class="page-head blue">
   <div class="container">
     <span class="eyebrow">About &amp; Lookbook</span>
     <h1 class="h1">From Türkiye to the Bay Area</h1>
@@ -351,7 +367,7 @@ about = f"""
       <p class="muted"><span class="ph">[The manufacturing partner(s): where they are, how long they have made contract seating, certifications.]</span></p>
       <p class="muted">Based in the San Francisco Bay Area, we handle quotes, shipping and delivery locally, so you deal with one team from first sample to final chair.</p>
     </div>
-    <div class="navy" style="padding:var(--s6);border-radius:var(--r-card)">{route}</div>
+    <div class="navy" style="padding:var(--s6);border-radius:var(--r)">{route}</div>
   </div>
 </section>
 
@@ -366,16 +382,16 @@ about = f"""
   </div>
 </section>
 
-<section class="section navy" id="lookbook">
+<section class="section" id="lookbook">
   <div class="container">
-    <div class="section-head"><div><span class="eyebrow">Lookbook</span><h2 class="h2">Kaya chairs in the wild</h2></div><p class="small navy-text-muted">Placeholder scenes until project photos arrive.</p></div>
+    <div class="section-head"><div><span class="eyebrow">Lookbook</span><h2 class="h2">Kaya chairs in the wild</h2></div><p class="small muted">Placeholder scenes until project photos arrive.</p></div>
     <div class="look">
-      <figure class="wide pattern">{chair('c-rib')}<figcaption>Restaurant · <span class="ph">[Venue, Oakland]</span></figcaption></figure>
-      <figure class="tall light paper">{chair('c-lounge')}<figcaption>Hotel lobby · <span class="ph">[Venue, San Jose]</span></figcaption></figure>
-      <figure class="navy" style="background:var(--navy-2)">{chair('c-stool')}<figcaption>Bar · <span class="ph">[Venue, SF]</span></figcaption></figure>
-      <figure class="light white">{chair('c-bistro')}<figcaption>Patio · <span class="ph">[Venue]</span></figcaption></figure>
-      <figure class="wide" style="background:var(--navy-2)">{chair('c-arm')}<figcaption>Event · <span class="ph">[Event, Napa]</span></figcaption></figure>
-      <figure class="light paper">{chair('c-rib')}<figcaption>Café · <span class="ph">[Venue, Berkeley]</span></figcaption></figure>
+      <figure class="wide pink">{chair('c-rib')}<figcaption>Restaurant · <span class="ph">[Venue, Oakland]</span></figcaption></figure>
+      <figure class="tall blue">{chair('c-lounge')}<figcaption>Hotel lobby · <span class="ph">[Venue, San Jose]</span></figcaption></figure>
+      <figure class="mint">{chair('c-stool')}<figcaption>Bar · <span class="ph">[Venue, SF]</span></figcaption></figure>
+      <figure class="paper">{chair('c-bistro')}<figcaption>Patio · <span class="ph">[Venue]</span></figcaption></figure>
+      <figure class="wide blue">{chair('c-arm')}<figcaption>Event · <span class="ph">[Event, Napa]</span></figcaption></figure>
+      <figure class="pink">{chair('c-rib')}<figcaption>Café · <span class="ph">[Venue, Berkeley]</span></figcaption></figure>
     </div>
   </div>
 </section>
@@ -386,7 +402,7 @@ page("about.html", "About & Lookbook — Kaya Chairs", "Kaya brings Turkish-made
 
 # ================================================================ QUOTE & CONTACT
 contact = f"""
-<section class="page-head navy">
+<section class="page-head blue">
   <div class="container">
     <span class="eyebrow">Quote &amp; Contact</span>
     <h1 class="h1">Request a wholesale quote</h1>
@@ -396,7 +412,7 @@ contact = f"""
 
 <section class="section paper" id="quote">
   <div class="container two" style="align-items:start">
-    <div class="white" style="padding:clamp(24px,4vw,40px);border-radius:var(--r-card);border:1px solid var(--line)">
+    <div class="white" style="padding:clamp(24px,4vw,40px);border-radius:var(--r);box-shadow:var(--shadow)">
       <form class="form" id="quoteForm" novalidate>
         <div class="error-summary" tabindex="-1" role="alert"></div>
         <fieldset>
@@ -433,7 +449,7 @@ contact = f"""
           </div>
           <div class="field"><label for="f-msg">Anything else?</label><textarea id="f-msg" placeholder="Quantities, colours, samples, venue opening date…"></textarea></div>
         </fieldset>
-        <button type="submit" class="btn btn-gold btn-block">Request a Quote</button>
+        <button type="submit" class="btn btn-orange btn-block">Request a Quote</button>
         <p class="small muted">Prototype: this form doesn't send yet.</p>
       </form>
       <div class="success" id="quoteSuccess" tabindex="-1">

@@ -33,17 +33,16 @@ function updateCount() {
 }
 
 /* ---------- Cards ---------- */
+const addBtn = (c, on) => `<button type="button" class="round-add" data-add="${c.id}" aria-pressed="${on}" aria-label="${on ? 'Remove ' + esc(c.name) + ' from quote' : 'Add ' + esc(c.name) + ' to quote'}">${icon(on ? 'check' : 'plus')}</button>`;
 function card(c) {
   const on = inQuote(c.id);
   return `<li><article class="card" data-id="${c.id}">
-    <div class="card-img" style="--tint:${c.finishes[0][1]}">${c.badge ? `<span class="badge">${esc(c.badge)}</span>` : ''}${art(c.art)}<span class="finish-name">${esc(c.finishes[0][0])}</span></div>
-    <div class="card-row"><h3 class="h3">${esc(c.name)}</h3><span class="small muted">${TYPES[c.type]}</span></div>
-    <p class="small muted">${esc(c.meta)}</p>
-    <div class="tags">${c.tags.map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-    <div class="card-row">
-      <div class="swatches" role="group" aria-label="Colours for ${esc(c.name)}">${c.finishes.map(([n, hex], i) => `<button type="button" class="swatch" style="--tint:${hex}" data-i="${i}" aria-label="${esc(n)}" aria-pressed="${!i}"></button>`).join('')}</div>
-      <button type="button" class="btn btn-line-dark add-btn" data-add="${c.id}" aria-pressed="${on}">${on ? `${icon('check')} In quote` : `${icon('plus')} Add to quote`}</button>
+    <div class="card-img" style="--tint-c:${c.finishes[0][1]}">${c.badge ? `<span class="badge">${esc(c.badge)}</span>` : ''}${art(c.art)}<span class="finish-name">${esc(c.finishes[0][0])}</span></div>
+    <div class="card-row"><h3 class="h3">${esc(c.name)}</h3>
+      <div class="swatches" role="group" aria-label="Colours for ${esc(c.name)}">${c.finishes.map(([n, hex], i) => `<button type="button" class="swatch" style="--tint-c:${hex}" data-i="${i}" aria-label="${esc(n)}" aria-pressed="${!i}"></button>`).join('')}</div>
     </div>
+    <p class="small muted">${esc(c.meta)}</p>
+    <div class="card-row"><span class="price">From <span class="ph">[$—]</span></span>${addBtn(c, on)}</div>
   </article></li>`;
 }
 
@@ -51,22 +50,22 @@ document.addEventListener('click', e => {
   const sw = e.target.closest('.swatch');
   if (sw) {
     const el = sw.closest('.card'), c = CHAIRS.find(x => x.id === el.dataset.id), i = +sw.dataset.i;
-    $('.card-img', el).style.setProperty('--tint', c.finishes[i][1]);
+    $('.card-img', el).style.setProperty('--tint-c', c.finishes[i][1]);
     $('.finish-name', el).textContent = c.finishes[i][0];
     $$('.swatch', el).forEach((s, j) => s.setAttribute('aria-pressed', i === j));
     return;
   }
   const add = e.target.closest('[data-add]');
   if (add) {
-    const el = add.closest('.card'), id = add.dataset.add;
-    const finish = $('.swatch[aria-pressed=true]', el)?.getAttribute('aria-label') || '';
+    const el = add.closest('.card, .mini'), id = add.dataset.add;
+    const finish = (el && $('.swatch[aria-pressed=true]', el)?.getAttribute('aria-label')) || '';
     let list = readQuote();
     if (list.some(x => x.id === id)) list = list.filter(x => x.id !== id);
     else list.push({ id, finish, qty: '' });
     writeQuote(list);
     const on = inQuote(id);
-    add.setAttribute('aria-pressed', on);
-    add.innerHTML = on ? `${icon('check')} In quote` : `${icon('plus')} Add to quote`;
+    const c = CHAIRS.find(x => x.id === id);
+    $$(`[data-add="${id}"]`).forEach(b => b.outerHTML = addBtn(c, on));
     const st = $('#quoteStatus'); if (st) st.textContent = on ? `${CHAIRS.find(c => c.id === id).name} added to your quote.` : 'Removed from your quote.';
   }
 });
@@ -95,7 +94,22 @@ function initGlobal() {
 /* ---------- Home ---------- */
 function initHome() {
   const el = $('#featured'); if (!el) return;
-  el.innerHTML = ['rib-side', 'ege-bistro', 'harbor-bar', 'bosphorus-lounge'].map(id => card(CHAIRS.find(c => c.id === id))).join('');
+  el.innerHTML = ['rib-side', 'rib-arm', 'bosphorus-lounge', 'ege-bistro'].map(id => card(CHAIRS.find(c => c.id === id))).join('');
+
+  // "Products" block: tabs filter the mini grid; the big panel shows the first match
+  const tabs = $$('.tab'), grid = $('#miniGrid'), feat = $('#prodFeature');
+  const render = f => {
+    tabs.forEach(t => t.setAttribute('aria-pressed', t.dataset.f === f));
+    const list = CHAIRS.filter(c => f === 'all' || c.type === f);
+    const lead = list[0];
+    feat.innerHTML = `${art(lead.art)}<span class="cap">${esc(lead.name)} · ${esc(lead.finishes[0][0])}</span>`;
+    grid.innerHTML = list.map(c => `<li class="mini" data-id="${c.id}">
+      <a class="card-img" href="collection.html#${c.type}" style="--tint-c:${c.finishes[0][1]}" aria-label="${esc(c.name)} in the collection">${art(c.art)}</a>
+      <div class="card-row"><h3 class="h3">${esc(c.name)}</h3><span class="price-accent">From <span class="ph">[$—]</span></span></div>
+    </li>`).join('');
+  };
+  tabs.forEach(t => t.addEventListener('click', () => render(t.dataset.f)));
+  render('all');
 }
 
 /* ---------- Collection ---------- */
@@ -121,7 +135,7 @@ function renderQuoteList() {
     const c = CHAIRS.find(x => x.id === q.id); if (!c) return '';
     const hex = (c.finishes.find(f => f[0] === q.finish) || c.finishes[0])[1];
     return `<div class="qitem" data-i="${i}">
-      <span class="thumb" style="--tint:${hex}">${art(c.art)}</span>
+      <span class="thumb" style="--tint-c:${hex}">${art(c.art)}</span>
       <span><strong>${esc(c.name)}</strong><br><span class="small muted">${esc(q.finish || c.finishes[0][0])}</span></span>
       <label class="sr" style="position:absolute;left:-9999px" for="qq${i}">Quantity for ${esc(c.name)}</label>
       <input id="qq${i}" type="number" min="1" inputmode="numeric" placeholder="Qty" value="${esc(q.qty)}">
