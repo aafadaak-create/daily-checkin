@@ -15,4 +15,4 @@ Static HTML/CSS/JS. Open `index.html` in a browser, no build step needed.
 - **Products** are placeholder data in `assets/kaya.js` (`PRODUCTS`). Line drawings stand in for photography.
 - **Placeholders** for facts we don't have yet are marked like `[this]` with a grey highlight.
 - **Forms** validate and show success states but are not connected to email/WhatsApp yet.
-- **Logo:** the `KAYA` wordmark in the header is a slot for the real logo file.
+- **Logo:** original draft concepts in `assets/logo/` (SVG) and on `logos.html`. Concept A is used in the header, footer and browser-tab icon.
