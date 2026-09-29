@@ -21,7 +21,7 @@ const art = (p, cls = 'art') => `<svg class="${cls}" viewBox="${p.vb}" aria-hidd
 function productCard(p) {
   return `<li class="reveal"><a class="pcard" href="product.html#${p.id}">
     <div class="pcard-img card">${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}${art(p)}</div>
-    <div class="pcard-meta"><h3 class="t-h3">${esc(p.name)}</h3><span class="t-small">From <span class="ph">[SAR —]</span></span></div>
+    <div class="pcard-meta"><h3 class="t-h3">${esc(p.name)}</h3><span class="t-small">${CATS[p.cat]}</span></div>
     <div class="pcard-meta"><span class="t-small">${esc(p.meta)}</span><span class="swatches" aria-label="${p.finishes.length} finishes">${p.finishes.map(f => `<i style="background:${f[1]}"></i>`).join('')}</span></div>
   </a></li>`;
 }
@@ -101,7 +101,7 @@ function initProduct() {
   document.title = `${p.name} — Kaya`;
   $$('.js-name').forEach(el => el.textContent = p.name);
   $('.js-cat').textContent = CATS[p.cat];
-  $('.js-cat').href = `catalog.html#${p.cat}`;
+  $('.js-cat').href = `index.html#${p.cat}`;
   $('.js-meta').textContent = p.meta;
   if (p.badge) { $('.js-badge').textContent = p.badge; $('.js-badge').hidden = false; }
 
@@ -139,7 +139,6 @@ function initProduct() {
     return `${base}#${p.id}`;
   };
   $('#enquireBtn').addEventListener('click', () => location.href = link('contact.html'));
-  $('#wholesaleBtn').addEventListener('click', () => location.href = link('wholesale.html'));
 
   // Related
   $('#related').innerHTML = PRODUCTS.filter(x => x.id !== p.id).sort((a, b) => (b.cat === p.cat) - (a.cat === p.cat)).slice(0, 4).map(productCard).join('');

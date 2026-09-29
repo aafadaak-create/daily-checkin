@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kaya — Furniture for homes, hotels & workplaces</title>
-<meta name="description" content="Kaya furniture: living, dining, bedroom and décor, plus wholesale for trade.">
+<title>Products — Kaya</title>
+<meta name="description" content="Browse the Kaya collection by room and material.">
 <link rel="icon" href="data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2040%2040'><rect%20width='40'%20height='40'%20rx='6'%20fill='%230D0D0D'/><g%20fill='none'%20stroke='%23FFFFFF'%20stroke-width='2.8'%20stroke-linecap='square'><path%20d='M12%206V34M12%2021%2028%206M12%2021H28V34'/></g></svg>">
 <link rel="stylesheet" href="assets/kaya.css">
 </head>
@@ -45,99 +45,46 @@
   <symbol id="kaya-word" viewBox="0 0 78 18"><g fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="square" stroke-linejoin="miter"><path d="M1 1V17M1 10.5 10.5 1M1 10.5H10.5V17"/><path d="M21 17 27 1 33 17"/><path d="M43 1 49 9 55 1M49 9V17"/><path d="M65 17 71 1 77 17"/></g></symbol>
   <symbol id="kaya-arch" viewBox="0 0 40 48"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"><path d="M4 46V20a16 16 0 0 1 32 0v26z"/><g transform="translate(6 12) scale(.7)" stroke-width="3"><path d="M12 6V34M12 21 28 6M12 21H28V34"/></g></g></symbol>
 </svg>
-<div class="announce">Trade &amp; hospitality pricing available · <a href="wholesale.html">Request a wholesale quote</a></div>
 <header class="nav">
   <div class="container nav-inner">
     <a href="index.html" class="logo" aria-label="Kaya — home"><svg class="logo-mark" aria-hidden="true"><use href="#kaya-mark"/></svg><span class="logo-rule"></span><svg class="logo-word" aria-hidden="true"><use href="#kaya-word"/></svg></a>
-    <nav aria-label="Main"><ul class="nav-links"><li><a href="catalog.html">Shop</a></li><li><a href="wholesale.html">Wholesale</a></li><li><a href="about.html">Our story</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
+    <nav aria-label="Main"><ul class="nav-links"><li><a href="index.html" aria-current="page">Products</a></li><li><a href="about.html">Our story</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
     <div class="nav-end">
-      <a href="catalog.html" class="icon-btn" aria-label="Browse all pieces"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></a>
-      <a href="wholesale.html" class="btn btn-primary">Request a quote</a>
+      <a href="contact.html" class="btn btn-primary">Contact us</a>
       <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
     </div>
   </div>
-  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile" hidden><a href="catalog.html">Shop</a><a href="wholesale.html">Wholesale</a><a href="about.html">Our story</a><a href="contact.html">Contact</a><a href="wholesale.html">Request a quote</a></nav>
+  <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile" hidden><a href="index.html" aria-current="page">Products</a><a href="about.html">Our story</a><a href="contact.html">Contact</a></nav>
 </header>
 <main id="main">
 
-<section class="hero">
-  <div class="container hero-grid">
-    <div class="hero-copy">
-      <span class="t-label">New collection · <span class="ph">[Season]</span></span>
-      <h1 class="t-display balance">Made for the way you live.</h1>
-      <p class="t-body">Furniture with clean lines and honest materials, for homes, hotels and workplaces. <span class="ph">[Replace with Kaya's own line]</span></p>
-      <div class="hero-actions">
-        <a href="catalog.html" class="btn btn-primary">Shop the collection <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        <a href="wholesale.html" class="btn btn-ghost">Wholesale enquiries</a>
+<div class="container">
+  <header class="page-head">
+    <span class="t-label">The Kaya collection</span>
+    <h1 id="catalogTitle" style="margin-top:var(--s3)">All furniture</h1>
+    <p class="t-body">Every piece is available for single and volume orders, with custom sizes and finishes on request. <a href="contact.html" class="ink" style="text-decoration:underline">Contact us</a> for pricing and lead times.</p>
+  </header>
+  <div class="catalog">
+    <aside>
+      <form class="filters" id="filters" aria-label="Filter pieces" onsubmit="return false">
+        <fieldset id="fCat"><legend class="t-label">Room</legend></fieldset>
+        <fieldset id="fMat"><legend class="t-label">Material</legend></fieldset>
+        <fieldset><button type="button" class="link" id="clearFilters">Clear all</button></fieldset>
+      </form>
+    </aside>
+    <div>
+      <div class="toolbar">
+        <button type="button" class="btn btn-ghost filters-toggle" id="filtersToggle" aria-expanded="false" aria-controls="filters"><svg class="icon icon-sm" aria-hidden="true"><use href="#i-filter"/></svg> Filters</button>
+        <p class="t-small" id="resultCount" role="status" aria-live="polite"></p>
+        <div class="field" style="grid-template-columns:auto 160px;align-items:center;gap:var(--s3)">
+          <label for="sort" class="t-small">Sort</label>
+          <select id="sort"><option value="featured">Featured</option><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select>
+        </div>
       </div>
-    </div>
-    <div class="hero-visual" aria-hidden="true">
-      <svg class="art" viewBox="0 0 200 110"><use href="#sofa"/></svg>
-      <div class="hero-tag card"><p class="t-h3">Arden Sofa</p><p class="t-small">Linen · solid oak · 3-seater</p></div>
+      <ul class="grid-products cols-3" id="catalogGrid"></ul>
     </div>
   </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-head reveal">
-      <div><span class="t-label">Shop by room</span><h2>Every room, one quiet language.</h2></div>
-      <a href="catalog.html" class="link">View all <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    </div>
-    <ul class="cats reveal">
-      <li><a class="cat card" href="catalog.html#living"><svg class="art" viewBox="0 0 200 110" aria-hidden="true"><use href="#lounge"/></svg><div class="cat-foot"><h3 class="t-h3">Living</h3><svg class="icon icon-sm ink" aria-hidden="true"><use href="#i-arrow"/></svg></div></a></li>
-      <li><a class="cat card" href="catalog.html#dining"><svg class="art" viewBox="0 0 200 110" aria-hidden="true"><use href="#table"/></svg><div class="cat-foot"><h3 class="t-h3">Dining</h3><svg class="icon icon-sm ink" aria-hidden="true"><use href="#i-arrow"/></svg></div></a></li>
-      <li><a class="cat card" href="catalog.html#bedroom"><svg class="art" viewBox="0 0 200 110" aria-hidden="true"><use href="#bed"/></svg><div class="cat-foot"><h3 class="t-h3">Bedroom</h3><svg class="icon icon-sm ink" aria-hidden="true"><use href="#i-arrow"/></svg></div></a></li>
-      <li><a class="cat card" href="catalog.html#decor"><svg class="art" viewBox="0 0 120 140" aria-hidden="true"><use href="#plant"/></svg><div class="cat-foot"><h3 class="t-h3">Décor</h3><svg class="icon icon-sm ink" aria-hidden="true"><use href="#i-arrow"/></svg></div></a></li>
-    </ul>
-  </div>
-</section>
-
-<section class="section" style="padding-top:0">
-  <div class="container">
-    <div class="section-head reveal">
-      <div><span class="t-label">Featured</span><h2>Pieces we keep coming back to.</h2></div>
-      <a href="catalog.html" class="link">Shop all <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    </div>
-    <ul class="grid-products" id="featured"></ul>
-  </div>
-</section>
-
-<section class="container reveal">
-  <div class="split split-dark">
-    <div class="split-copy">
-      <span class="t-label">Kaya for trade</span>
-      <h2 class="balance">Furnishing a hotel, office or development?</h2>
-      <p class="t-body">Volume pricing, custom finishes and project delivery for hospitality, workplace and residential developers.</p>
-      <div><a href="wholesale.html" class="btn btn-light">Request a wholesale quote <svg class="icon icon-sm" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
-    </div>
-    <div class="split-art" aria-hidden="true"><svg class="art" viewBox="0 0 200 110"><use href="#table"/></svg></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-head reveal"><div><span class="t-label">Why Kaya</span><h2>Quietly well made.</h2></div></div>
-    <ul class="features reveal">
-      <li class="feature card"><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#i-leaf"/></svg></span><h3 class="t-h3">Honest materials</h3><p class="t-body">Solid woods, natural fabrics and stone, chosen to age well.</p></li>
-      <li class="feature card"><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#i-ruler"/></svg></span><h3 class="t-h3">Made to measure</h3><p class="t-body">Sizes and finishes adapted to your room or project.</p></li>
-      <li class="feature card"><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#i-truck"/></svg></span><h3 class="t-h3">Delivered &amp; placed</h3><p class="t-body">White-glove delivery and assembly. <span class="ph">[Coverage area]</span></p></li>
-      <li class="feature card"><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></span><h3 class="t-h3">Built to last</h3><p class="t-body"><span class="ph">[n]</span>-year warranty on frames and joinery.</p></li>
-    </ul>
-  </div>
-</section>
-
-<section class="container reveal">
-  <div class="two-col" style="align-items:center">
-    <div class="card" style="aspect-ratio:4/3;display:grid;place-items:center"><svg class="art" viewBox="0 0 200 120" style="width:70%" aria-hidden="true"><use href="#workshop"/></svg></div>
-    <div class="stack">
-      <span class="t-label">Our story</span>
-      <h2 class="balance">Less, but better.</h2>
-      <p class="t-body"><span class="ph">[Short Kaya story: who founded it, where the pieces are made, what it stands for.]</span></p>
-      <a href="about.html" class="link">Read our story <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-    </div>
-  </div>
-</section>
+</div>
 
 </main>
 <footer>
@@ -146,16 +93,10 @@
       <div>
         <a href="index.html" class="logo" aria-label="Kaya — home"><svg class="logo-mark" aria-hidden="true"><use href="#kaya-mark"/></svg><span class="logo-rule"></span><svg class="logo-word" aria-hidden="true"><use href="#kaya-word"/></svg></a>
         <p class="t-body" style="margin-top:var(--s4);max-width:320px">Furniture for homes, hotels and workplaces. <span class="ph">[Kaya tagline]</span></p>
-        <form class="newsletter" id="newsletter" novalidate>
-          <label for="nl-email" class="t-label" style="position:absolute;left:-9999px">Email</label>
-          <input id="nl-email" type="email" autocomplete="email" placeholder="Email for new collections">
-          <button class="btn btn-primary" type="submit">Join</button>
-        </form>
-        <p class="t-small" id="nlStatus" role="status" aria-live="polite" style="margin-top:var(--s2)"></p>
       </div>
-      <div><span class="t-label">Shop</span><ul class="t-body"><li><a href="catalog.html#living">Living</a></li><li><a href="catalog.html#dining">Dining</a></li><li><a href="catalog.html#bedroom">Bedroom</a></li><li><a href="catalog.html#decor">Décor</a></li></ul></div>
-      <div><span class="t-label">Trade</span><ul class="t-body"><li><a href="wholesale.html">Wholesale quote</a></li><li><a href="wholesale.html#how">How it works</a></li><li><a href="contact.html">Showroom</a></li></ul></div>
-      <div><span class="t-label">Kaya</span><ul class="t-body"><li><a href="about.html">Our story</a></li><li><a href="contact.html">Contact</a></li><li><a href="logos.html">Logo concepts</a></li><li><a href="#">Instagram <span class="ph">[link]</span></a></li></ul></div>
+      <div><span class="t-label">Products</span><ul class="t-body"><li><a href="index.html#living">Living</a></li><li><a href="index.html#dining">Dining</a></li><li><a href="index.html#bedroom">Bedroom</a></li><li><a href="index.html#decor">Décor</a></li></ul></div>
+      <div><span class="t-label">Kaya</span><ul class="t-body"><li><a href="about.html">Our story</a></li><li><a href="contact.html">Contact</a></li><li><a href="contact.html">Showroom</a></li></ul></div>
+      <div><span class="t-label">Follow</span><ul class="t-body"><li><a href="#">Instagram <span class="ph">[link]</span></a></li><li><a href="#">LinkedIn <span class="ph">[link]</span></a></li></ul></div>
     </div>
     <div class="foot-bottom t-small"><span>© <span class="js-year"></span> Kaya. All rights reserved.</span><span>Draft · not final</span></div>
   </div>
